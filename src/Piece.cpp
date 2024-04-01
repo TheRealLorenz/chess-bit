@@ -14,6 +14,17 @@ Piece::Piece(int x, int y, int size) : size(size) {
     vertices_[4].position = sf::Vector2f(0, size);
     vertices_[5].position = sf::Vector2f(size, size);
 
+    vertices_[0].texCoords = sf::Vector2f(0, 0);
+    vertices_[1].texCoords = sf::Vector2f(42, 0);
+    vertices_[2].texCoords = sf::Vector2f(0, 42);
+    vertices_[3].texCoords = sf::Vector2f(42, 0);
+    vertices_[4].texCoords = sf::Vector2f(0, 42);
+    vertices_[5].texCoords = sf::Vector2f(42, 42);
+
+    if (!texture_.loadFromFile("assets/pieces_black.png")) {
+        // TODO: throw error
+    }
+
     for (int i = 0; i < 6; i++) {
         vertices_[i].color = sf::Color::Yellow;
     }
