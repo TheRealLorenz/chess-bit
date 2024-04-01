@@ -31,7 +31,7 @@ private:
         target.draw(vertices_, states);
 
         for (auto& p : pieces) {
-            target.draw(*p);
+            target.draw(*p, states);
         }
     }
 };
