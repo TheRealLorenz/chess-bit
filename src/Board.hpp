@@ -7,11 +7,14 @@
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:
-    Board();
+    explicit Board(const int size = 400);
 
 private:
-    static const int N_CELL = 8;
-    static const int CELL_SIZE = 50;
+    // Lenght of a side of the board, in pixels.
+    // It's a square, so I only need a single value
+    const int size;
+    static const int CELL_IN_ROW = 8;
+
     sf::VertexArray vertices_;
     sf::Texture texture_;
     std::vector<std::unique_ptr<Piece>> pieces;
