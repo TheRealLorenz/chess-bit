@@ -40,7 +40,7 @@ Board::Board(const int size) : size(size) {
     }
 
     for (int i = 0; i < 8; i++) {
-        pieces.push_back(
-            std::unique_ptr<Piece>(new Piece(i * cell_size, i * cell_size)));
+        pieces.push_back(std::unique_ptr<Piece>(
+            new Piece(i * cell_size, i * cell_size, cell_size)));
     }
 }

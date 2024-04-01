@@ -5,12 +5,12 @@
 
 class Piece : public sf::Drawable, public sf::Transformable {
 public:
-    Piece(int x, int y);
+    Piece(int x, int y, int size = 50);
 
 private:
     sf::Texture texture_;
     sf::VertexArray vertices_;
-    static const int SIZE = 50;
+    const int size;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
