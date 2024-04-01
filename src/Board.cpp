@@ -10,8 +10,8 @@ Board::Board(const int size) : size(size) {
     vertices_.resize(size * size * 6);
     const int cell_size = size / CELL_IN_ROW;
 
-    for (int y = 0; y < size; y++) {
-        for (int x = 0; x < size; x++) {
+    for (int y = 0; y < CELL_IN_ROW; y++) {
+        for (int x = 0; x < CELL_IN_ROW; x++) {
             auto vertices = &vertices_[(x + y * size) * 6];
 
             // Upper left triangle
@@ -39,7 +39,7 @@ Board::Board(const int size) : size(size) {
         }
     }
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < CELL_IN_ROW; i++) {
         pieces.push_back(std::unique_ptr<Piece>(
             new Piece(i * cell_size, i * cell_size, cell_size)));
     }
