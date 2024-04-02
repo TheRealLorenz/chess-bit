@@ -11,7 +11,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(CMakeSFMLProject
-    src/main.cpp
+    src/main.cpp src/debug.hpp
     src/Game.cpp src/Game.hpp
     src/Board.cpp src/Board.hpp
     src/Piece.cpp src/Piece.hpp

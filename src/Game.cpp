@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/Event.hpp"
+#include "debug.hpp"
 
 Game::Game() {
     window = std::unique_ptr<sf::RenderWindow>(
@@ -24,6 +25,7 @@ void Game::on_event(const sf::Event& event) {
             break;
         }
         default: {
+            DEBUG("[TRACE] Unhandled event type: " << event.type << std::endl);
             break;
         }
     }
