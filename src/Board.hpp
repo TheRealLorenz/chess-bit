@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <memory>
 
 #include "Piece.hpp"
 

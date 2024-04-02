@@ -1,5 +1,6 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <memory>
 
 #include "Board.hpp"
 
