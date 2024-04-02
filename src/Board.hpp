@@ -1,9 +1,11 @@
 #pragma once
 
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/Window/Event.hpp>
 #include <memory>
 
 #include "Piece.hpp"
@@ -11,6 +13,8 @@
 class Board : public sf::Drawable, public sf::Transformable {
 public:
     explicit Board(const int size = 400);
+    const sf::FloatRect getBounds() const { return vertices_.getBounds(); }
+    void onMouseEvent(const sf::Event& event);
 
 private:
     // Lenght of a side of the board, in pixels.

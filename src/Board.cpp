@@ -1,5 +1,6 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Window/Event.hpp>
 #include <memory>
 
 #include "Board.hpp"
@@ -43,5 +44,19 @@ Board::Board(const int size) : size(size) {
     for (int i = 0; i < CELL_IN_ROW; i++) {
         pieces.push_back(std::unique_ptr<Piece>(
             new Piece(i * cell_size, i * cell_size, cell_size)));
+    }
+}
+
+void Board::onMouseEvent(const sf::Event& event) {
+    const auto boardPosition = getPosition();
+    const int cell_size = size / CELL_IN_ROW;
+
+    const int column = (event.mouseButton.x - boardPosition.x) / cell_size;
+    const int row = (event.mouseButton.y - boardPosition.y) / cell_size;
+
+    auto vertices = &vertices_[(column + row * size) * 6];
+
+    for (int i = 0; i < 6; i++) {
+        vertices[i].color = sf::Color::Yellow;
     }
 }

@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/Event.hpp"
+#include "SFML/Window/Mouse.hpp"
 #include "debug.hpp"
 
 Game::Game() {
@@ -22,6 +23,18 @@ void Game::on_event(const sf::Event& event) {
             sf::FloatRect visibleArea(0.f, 0.f, event.size.width,
                                       event.size.height);
             window->setView(sf::View(visibleArea));
+            break;
+        }
+        case sf::Event::MouseButtonPressed: {
+            if (event.mouseButton.button == sf::Mouse::Left) {
+                if (board.getBounds().contains(sf::Vector2f(
+                        event.mouseButton.x, event.mouseButton.y))) {
+                    board.onMouseEvent(event);
+                }
+                break;
+            }
+            DEBUG("[TRACE] Unhandled mouse button: " << event.mouseButton.button
+                                                     << std::endl);
             break;
         }
         default: {
