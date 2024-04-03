@@ -6,13 +6,13 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Window/Event.hpp>
-#include <memory>
 
 #include "pieces/Piece.hpp"
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:
     explicit Board(const int size = 400);
+    ~Board();
     const sf::FloatRect getBounds() const { return vertices_.getBounds(); }
     void onMouseEvent(const sf::Event& event);
 
@@ -25,13 +25,15 @@ private:
 
     sf::VertexArray vertices_;
     sf::Texture texture_;
-    std::vector<std::unique_ptr<Piece>> pieces;
+    // Init array to nullptrs
+    Piece *pieces[CELL_IN_ROW * CELL_IN_ROW] = {};
 
     Piece *const getPiece(Cell cell) const;
     void select(Piece *p);
     void unselect();
     void resetColors();
     void highlightMoves();
+    void move(Piece *p, Cell cell);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
@@ -44,8 +46,8 @@ private:
         // draw the vertex array
         target.draw(vertices_, states);
 
-        for (auto& p : pieces) {
-            target.draw(*p, states);
+        for (Piece *p : pieces) {
+            if (p) target.draw(*p, states);
         }
     }
 };

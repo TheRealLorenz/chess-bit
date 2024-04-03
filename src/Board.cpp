@@ -2,7 +2,6 @@
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
-#include <memory>
 
 #include "Board.hpp"
 #include "debug.hpp"
@@ -45,19 +44,19 @@ Board::Board(const int size) : size(size) {
     }
 
     for (int i = 0; i < CELL_IN_ROW; i++) {
-        pieces.push_back(std::unique_ptr<Piece>(
-            new Pawn({i, i}, Piece::Color::Black, cell_size)));
+        pieces[i * CELL_IN_ROW + i] =
+            new Pawn({i, i}, Piece::Color::Black, cell_size);
+    }
+}
+
+Board::~Board() {
+    for (auto& p : pieces) {
+        if (p) delete p;
     }
 }
 
 Piece *const Board::getPiece(Cell cell) const {
-    for (auto& p : pieces) {
-        if (p->getCell() == cell) {
-            return p.get();
-        }
-    }
-
-    return nullptr;
+    return pieces[cell.row * CELL_IN_ROW + cell.column];
 }
 
 void Board::resetColors() {
@@ -120,6 +119,13 @@ void Board::unselect() {
     resetColors();
 }
 
+void Board::move(Piece *p, Cell cell) {
+    auto oldCell = p->getCell();
+    p->setCell(cell);
+    pieces[cell.row * CELL_IN_ROW + cell.column] = p;
+    pieces[oldCell.row * CELL_IN_ROW + oldCell.column] = nullptr;
+}
+
 void Board::onMouseEvent(const sf::Event& event) {
     const auto boardPosition = getPosition();
     const int cell_size = size / CELL_IN_ROW;
@@ -154,7 +160,7 @@ void Board::onMouseEvent(const sf::Event& event) {
 
             if (!otherPiece && cell == Cell{row, column}) {
                 DEBUG("[DEBUG] Moving to empty cell" << std::endl);
-                selectedPiece->setCell(cell);
+                move(selectedPiece, cell);
                 unselect();
                 return;
             }
