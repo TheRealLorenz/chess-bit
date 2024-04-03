@@ -14,7 +14,8 @@ add_executable(CMakeSFMLProject
     src/main.cpp src/debug.hpp
     src/Game.cpp src/Game.hpp
     src/Board.cpp src/Board.hpp
-    src/Piece.cpp src/Piece.hpp
+    src/pieces/Piece.cpp src/pieces/Piece.hpp
+    src/pieces/Pawn.cpp src/pieces/Pawn.hpp
 )
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)

@@ -8,7 +8,7 @@
 #include <SFML/Window/Event.hpp>
 #include <memory>
 
-#include "Piece.hpp"
+#include "pieces/Piece.hpp"
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:

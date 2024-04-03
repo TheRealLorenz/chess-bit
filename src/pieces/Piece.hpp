@@ -4,15 +4,25 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <vector>
 
-class Piece : public sf::Drawable, public sf::Transformable {
+class Piece : public sf::Drawable, private sf::Transformable {
 public:
-    Piece(int x, int y, int size = 50);
+    enum class Color { White, Black };
+    enum class Type { Pawn };
+
+    Piece(int row, int column, Color color, int size = 50);
+    virtual std::vector<sf::Vector2u> getMoves() const = 0;
+
+protected:
+    void loadTexture(Type type);
+    int row, column;
 
 private:
     sf::Texture texture_;
     sf::VertexArray vertices_;
     const int size;
+    const Color color;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was

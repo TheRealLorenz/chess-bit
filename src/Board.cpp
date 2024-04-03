@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Board.hpp"
+#include "pieces/Pawn.hpp"
 
 Board::Board(const int size) : size(size) {
     vertices_.setPrimitiveType(sf::Triangles);
@@ -43,7 +44,7 @@ Board::Board(const int size) : size(size) {
 
     for (int i = 0; i < CELL_IN_ROW; i++) {
         pieces.push_back(std::unique_ptr<Piece>(
-            new Piece(i * cell_size, i * cell_size, cell_size)));
+            new Pawn(i, i, Piece::Color::Black, cell_size)));
     }
 }
 
