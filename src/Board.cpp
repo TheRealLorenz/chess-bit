@@ -1,9 +1,11 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <memory>
 
 #include "Board.hpp"
+#include "debug.hpp"
 #include "pieces/Pawn.hpp"
 
 Board::Board(const int size) : size(size) {
@@ -44,8 +46,78 @@ Board::Board(const int size) : size(size) {
 
     for (int i = 0; i < CELL_IN_ROW; i++) {
         pieces.push_back(std::unique_ptr<Piece>(
-            new Pawn(i, i, Piece::Color::Black, cell_size)));
+            new Pawn({i, i}, Piece::Color::Black, cell_size)));
     }
+}
+
+Piece *const Board::getPiece(Cell cell) const {
+    for (auto& p : pieces) {
+        if (p->getCell() == cell) {
+            return p.get();
+        }
+    }
+
+    return nullptr;
+}
+
+void Board::resetColors() {
+    const int cell_size = size / CELL_IN_ROW;
+
+    for (int y = 0; y < CELL_IN_ROW; y++) {
+        for (int x = 0; x < CELL_IN_ROW; x++) {
+            auto vertices = &vertices_[(x + y * size) * 6];
+
+            for (int i = 0; i < 6; i++) {
+                if ((x + y) % 2 == 0) {
+                    vertices[i].color = sf::Color::White;
+                } else {
+                    vertices[i].color = sf::Color::Black;
+                }
+            }
+        }
+    }
+}
+
+void Board::highlightMoves() {
+    if (!selectedPiece) return;
+    auto moves = selectedPiece->getMoves();
+    auto cell = selectedPiece->getCell();
+    auto vertices = &vertices_[(cell.column + cell.row * size) * 6];
+
+    for (int i = 0; i < 6; i++) {
+        vertices[i].color = sf::Color::Yellow;
+    }
+
+    for (auto& moveSet : moves) {
+        for (auto& cell : moveSet) {
+            auto otherPiece = getPiece(cell);
+            if (otherPiece &&
+                otherPiece->getColor() == selectedPiece->getColor())
+                break;
+
+            auto vertices = &vertices_[(cell.column + cell.row * size) * 6];
+
+            for (int i = 0; i < 6; i++) {
+                vertices[i].color = sf::Color::Yellow;
+            }
+
+            if (otherPiece &&
+                otherPiece->getColor() != selectedPiece->getColor())
+                break;
+        }
+    }
+}
+
+void Board::select(Piece *p) {
+    if (!p) return;
+
+    selectedPiece = p;
+    highlightMoves();
+}
+
+void Board::unselect() {
+    selectedPiece = nullptr;
+    resetColors();
 }
 
 void Board::onMouseEvent(const sf::Event& event) {
@@ -54,10 +126,46 @@ void Board::onMouseEvent(const sf::Event& event) {
 
     const int column = (event.mouseButton.x - boardPosition.x) / cell_size;
     const int row = (event.mouseButton.y - boardPosition.y) / cell_size;
+    auto clickedPiece = getPiece({row, column});
 
-    auto vertices = &vertices_[(column + row * size) * 6];
+    DEBUG("[DEBUG] Clicked " << (clickedPiece ? "full" : "empty") << " cell ("
+                             << column << ", " << row << ")" << std::endl);
 
-    for (int i = 0; i < 6; i++) {
-        vertices[i].color = sf::Color::Yellow;
+    if (!selectedPiece && clickedPiece) {
+        DEBUG("[DEBUG] Selecting clicked piece" << std::endl);
+        select(clickedPiece);
+        return;
     }
+
+    if (!selectedPiece) return;
+
+    if (clickedPiece && selectedPiece->getColor() == clickedPiece->getColor()) {
+        unselect();
+        select(clickedPiece);
+        return;
+    }
+
+    auto moves = selectedPiece->getMoves();
+
+    for (auto& moveSet : moves) {
+        for (auto& cell : moveSet) {
+            auto otherPiece = getPiece(cell);
+            if (otherPiece && cell != Cell{row, column}) break;
+
+            if (!otherPiece && cell == Cell{row, column}) {
+                DEBUG("[DEBUG] Moving to empty cell" << std::endl);
+                selectedPiece->setCell(cell);
+                unselect();
+                return;
+            }
+
+            if (cell == Cell{row, column}) {
+                DEBUG("[DEBUG] Eating enemy" << std::endl);
+                return;
+            }
+        }
+    }
+
+    DEBUG("[DEBUG] Invalid move, unselecting" << std::endl);
+    unselect();
 }

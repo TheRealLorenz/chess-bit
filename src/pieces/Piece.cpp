@@ -3,8 +3,7 @@
 
 #include "Piece.hpp"
 
-Piece::Piece(int row, int column, Color color, int size)
-    : row(row), column(column), color(color), size(size) {
+Piece::Piece(Cell cell, Color color, int size) : color(color), size(size) {
     vertices_.setPrimitiveType(sf::Triangles);
     vertices_.resize(6);
 
@@ -15,7 +14,7 @@ Piece::Piece(int row, int column, Color color, int size)
     vertices_[4].position = sf::Vector2f(0, size);
     vertices_[5].position = sf::Vector2f(size, size);
 
-    setPosition(sf::Vector2f(column * size, row * size));
+    setCell(cell);
 }
 
 void Piece::loadTexture(Type type) {
@@ -42,4 +41,11 @@ void Piece::loadTexture(Type type) {
     vertices_[3].texCoords = sf::Vector2f(x + width, y);
     vertices_[4].texCoords = sf::Vector2f(x, y + height);
     vertices_[5].texCoords = sf::Vector2f(x + width, y + height);
+}
+
+void Piece::setCell(Cell cell) {
+    row = cell.row;
+    column = cell.column;
+
+    setPosition(sf::Vector2f(column * size, row * size));
 }

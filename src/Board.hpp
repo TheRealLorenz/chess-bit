@@ -21,10 +21,17 @@ private:
     // It's a square, so I only need a single value
     const int size;
     static const int CELL_IN_ROW = 8;
+    Piece *selectedPiece = nullptr;
 
     sf::VertexArray vertices_;
     sf::Texture texture_;
     std::vector<std::unique_ptr<Piece>> pieces;
+
+    Piece *const getPiece(Cell cell) const;
+    void select(Piece *p);
+    void unselect();
+    void resetColors();
+    void highlightMoves();
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was

@@ -7,7 +7,7 @@
 
 class Pawn : public Piece {
 public:
-    Pawn(int row, int column, Color color, const int size = 50);
+    Pawn(Cell cell, Color color, const int size = 50);
 
-    virtual std::vector<sf::Vector2u> getMoves() const;
+    virtual std::vector<std::vector<Cell>> getMoves() const;
 };

@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(SFML)
 add_executable(CMakeSFMLProject
     src/main.cpp src/debug.hpp
     src/Game.cpp src/Game.hpp
-    src/Board.cpp src/Board.hpp
+    src/Board.cpp src/Board.hpp src/Cell.hpp
     src/pieces/Piece.cpp src/pieces/Piece.hpp
     src/pieces/Pawn.cpp src/pieces/Pawn.hpp
 )
