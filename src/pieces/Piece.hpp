@@ -5,7 +5,6 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <cstdint>
 #include <vector>
 
 #include "../Cell.hpp"
@@ -23,7 +22,7 @@ public:
 
 protected:
     void loadTexture(Type type);
-    uint8_t row, column;
+    int row, column;
     const Color color;
 
 private:
