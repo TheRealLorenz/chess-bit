@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "King.hpp"
 
 King::King(Cell cell, Color color, const int size) : Piece(cell, color, size) {
@@ -5,24 +7,15 @@ King::King(Cell cell, Color color, const int size) : Piece(cell, color, size) {
 }
 
 std::vector<std::vector<Cell>> King::getMoves() const {
-    auto moves = std::vector<std::vector<Cell>>(4);
+    auto moves = std::vector<std::vector<Cell>>(8);
     int idx = 0;
 
-    if (row > 0) {
-        if (column > 0) {
-            moves[idx++].push_back({row - 1, column - 1});
-        }
-        if (column < 7) {
-            moves[idx++].push_back({row - 1, column + 1});
-        }
-    }
+    for (int i = std::max(0, row - 1); i <= std::min(7, row + 1); i++) {
+        for (int j = std::max(0, column - 1); j <= std::min(7, column + 1);
+             j++) {
+            if (i == row && j == column) continue;
 
-    if (row < 7) {
-        if (column > 0) {
-            moves[idx++].push_back({row + 1, column - 1});
-        }
-        if (column < 7) {
-            moves[idx++].push_back({row + 1, column + 1});
+            moves[idx++].push_back({i, j});
         }
     }
 
