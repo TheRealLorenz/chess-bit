@@ -11,9 +11,11 @@
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:
+    enum class Tile { Light, Dark, Highlight };
+
     explicit Board(const int size = 400);
     ~Board();
-    const sf::FloatRect getBounds() const { return vertices_.getBounds(); }
+    const sf::FloatRect getBounds() const { return baseTiles.getBounds(); }
     void onMouseEvent(const sf::Event& event);
 
 private:
@@ -23,7 +25,8 @@ private:
     static const int CELL_IN_ROW = 8;
     Piece *selectedPiece = nullptr;
 
-    sf::VertexArray vertices_;
+    sf::VertexArray baseTiles;
+    sf::VertexArray highlightTiles;
     sf::Texture texture_;
     // Init array to nullptrs
     Piece *pieces[CELL_IN_ROW * CELL_IN_ROW] = {};
@@ -31,10 +34,10 @@ private:
     Piece *const getPiece(Cell cell) const;
     void select(Piece *p);
     void unselect();
-    void resetColors();
     void highlightMoves();
     void move(Piece *p, Cell cell);
     void populate(const int schema[64][2]);
+    void setTile(sf::Vertex *vertices, Tile tile);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
@@ -45,7 +48,8 @@ private:
         states.texture = &texture_;
 
         // draw the vertex array
-        target.draw(vertices_, states);
+        target.draw(baseTiles, states);
+        target.draw(highlightTiles, states);
 
         for (Piece *p : pieces) {
             if (p) target.draw(*p, states);

@@ -4,6 +4,7 @@
 #include <SFML/Window/Event.hpp>
 
 #include "Board.hpp"
+#include "SFML/Graphics/Vertex.hpp"
 #include "debug.hpp"
 #include "pieces/Bishop.hpp"
 #include "pieces/King.hpp"
@@ -24,15 +25,17 @@ const int defaultSchema[64][2] = {
 };
 
 Board::Board(const int size) : size(size) {
-    vertices_.setPrimitiveType(sf::Triangles);
+    baseTiles.setPrimitiveType(sf::Triangles);
+    highlightTiles.setPrimitiveType(sf::Triangles);
     // Each cell is composed of two triangles
     // hence 3 vertices for triangle
-    vertices_.resize(size * size * 6);
+    texture_.loadFromFile("assets/tiles.png");
+    baseTiles.resize(size * size * 6);
     const int cell_size = size / CELL_IN_ROW;
 
     for (int y = 0; y < CELL_IN_ROW; y++) {
         for (int x = 0; x < CELL_IN_ROW; x++) {
-            auto vertices = &vertices_[(x + y * size) * 6];
+            auto vertices = &baseTiles[(x + y * size) * 6];
 
             // Upper left triangle
             vertices[0].position = sf::Vector2f(x * cell_size, y * cell_size);
@@ -49,13 +52,7 @@ Board::Board(const int size) : size(size) {
             vertices[5].position =
                 sf::Vector2f((x + 1) * cell_size, (y + 1) * cell_size);
 
-            for (int i = 0; i < 6; i++) {
-                if ((x + y) % 2 == 0) {
-                    vertices[i].color = sf::Color::White;
-                } else {
-                    vertices[i].color = sf::Color::Black;
-                }
-            }
+            setTile(vertices, (x + y) % 2 == 0 ? Tile::Light : Tile::Dark);
         }
     }
 
@@ -106,38 +103,49 @@ Board::~Board() {
     }
 }
 
+void Board::setTile(sf::Vertex *vertices, Tile tile) {
+    int x = 0;
+    int y = 0;
+    int width = 64;
+    int height = 64;
+
+    switch (tile) {
+        case Tile::Highlight:
+            break;
+        case Tile::Dark:
+            x += width;
+            break;
+        case Tile::Light:
+            x += 2 * width;
+            break;
+    }
+
+    vertices[0].texCoords = sf::Vector2f(x, y);
+    vertices[1].texCoords = sf::Vector2f(x + width, y);
+    vertices[2].texCoords = sf::Vector2f(x, y + height);
+    vertices[3].texCoords = sf::Vector2f(x + width, y);
+    vertices[4].texCoords = sf::Vector2f(x, y + height);
+    vertices[5].texCoords = sf::Vector2f(x + width, y + height);
+}
+
 Piece *const Board::getPiece(Cell cell) const {
     return pieces[cell.row * CELL_IN_ROW + cell.column];
 }
 
-void Board::resetColors() {
-    const int cell_size = size / CELL_IN_ROW;
-
-    for (int y = 0; y < CELL_IN_ROW; y++) {
-        for (int x = 0; x < CELL_IN_ROW; x++) {
-            auto vertices = &vertices_[(x + y * size) * 6];
-
-            for (int i = 0; i < 6; i++) {
-                if ((x + y) % 2 == 0) {
-                    vertices[i].color = sf::Color::White;
-                } else {
-                    vertices[i].color = sf::Color::Black;
-                }
-            }
-        }
-    }
-}
-
 void Board::highlightMoves() {
     if (!selectedPiece) return;
+    highlightTiles.clear();
+
     auto moves = selectedPiece->getMoves();
     auto cell = selectedPiece->getCell();
-    auto vertices = &vertices_[(cell.column + cell.row * size) * 6];
+    auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
 
     for (int i = 0; i < 6; i++) {
-        vertices[i].color = sf::Color::Yellow;
+        highlightTiles.append(sf::Vertex(vertices[i].position));
     }
+    setTile(&highlightTiles[0], Tile::Highlight);
 
+    int tile = 1;
     for (auto& moveSet : moves) {
         for (auto& cell : moveSet) {
             auto otherPiece = getPiece(cell);
@@ -145,11 +153,13 @@ void Board::highlightMoves() {
                 otherPiece->getColor() == selectedPiece->getColor())
                 break;
 
-            auto vertices = &vertices_[(cell.column + cell.row * size) * 6];
+            auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
 
             for (int i = 0; i < 6; i++) {
-                vertices[i].color = sf::Color::Yellow;
+                highlightTiles.append(sf::Vertex(vertices[i].position));
             }
+            setTile(&highlightTiles[tile * 6], Tile::Highlight);
+            tile++;
 
             if (otherPiece &&
                 otherPiece->getColor() != selectedPiece->getColor())
@@ -167,7 +177,7 @@ void Board::select(Piece *p) {
 
 void Board::unselect() {
     selectedPiece = nullptr;
-    resetColors();
+    highlightTiles.clear();
 }
 
 void Board::move(Piece *p, Cell cell) {
