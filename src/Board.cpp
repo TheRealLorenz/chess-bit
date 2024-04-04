@@ -5,7 +5,23 @@
 
 #include "Board.hpp"
 #include "debug.hpp"
+#include "pieces/Bishop.hpp"
+#include "pieces/King.hpp"
+#include "pieces/Knight.hpp"
 #include "pieces/Pawn.hpp"
+#include "pieces/Queen.hpp"
+#include "pieces/Tower.hpp"
+
+const int defaultSchema[64][2] = {
+    {1, 1},  {2, 1},  {3, 1},  {4, 1},  {5, 1},  {3, 1},  {2, 1},  {1, 1},
+    {0, 1},  {0, 1},  {0, 1},  {0, 1},  {0, 1},  {0, 1},  {0, 1},  {0, 1},
+    {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0},
+    {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0},
+    {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0},
+    {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0},
+    {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 0},  {0, 0},
+    {1, 0},  {2, 0},  {3, 0},  {4, 0},  {5, 0},  {3, 0},  {2, 0},  {1, 0},
+};
 
 Board::Board(const int size) : size(size) {
     vertices_.setPrimitiveType(sf::Triangles);
@@ -43,9 +59,44 @@ Board::Board(const int size) : size(size) {
         }
     }
 
-    for (int i = 0; i < CELL_IN_ROW; i++) {
-        pieces[i * CELL_IN_ROW + i] =
-            new Pawn({i, i}, Piece::Color::Black, cell_size);
+    populate(defaultSchema);
+}
+
+void Board::populate(const int schema[64][2]) {
+    for (int row = 0; row < CELL_IN_ROW; row++) {
+        for (int column = 0; column < CELL_IN_ROW; column++) {
+            if (schema[row * CELL_IN_ROW + column][0] == -1) continue;
+
+            auto type = Piece::Type(schema[row * CELL_IN_ROW + column][0]);
+            auto color = Piece::Color(schema[row * CELL_IN_ROW + column][1]);
+
+            switch (type) {
+                case Piece::Type::Pawn:
+                    pieces[row * CELL_IN_ROW + column] =
+                        new Pawn({row, column}, color);
+                    break;
+                case Piece::Type::Tower:
+                    pieces[row * CELL_IN_ROW + column] =
+                        new Tower({row, column}, color);
+                    break;
+                case Piece::Type::Knight:
+                    pieces[row * CELL_IN_ROW + column] =
+                        new Knight({row, column}, color);
+                    break;
+                case Piece::Type::Bishop:
+                    pieces[row * CELL_IN_ROW + column] =
+                        new Bishop({row, column}, color);
+                    break;
+                case Piece::Type::Queen:
+                    pieces[row * CELL_IN_ROW + column] =
+                        new Queen({row, column}, color);
+                    break;
+                case Piece::Type::King:
+                    pieces[row * CELL_IN_ROW + column] =
+                        new King({row, column}, color);
+                    break;
+            }
+        }
     }
 }
 

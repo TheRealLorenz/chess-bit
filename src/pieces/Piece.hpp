@@ -11,8 +11,8 @@
 
 class Piece : public sf::Drawable, private sf::Transformable {
 public:
-    enum class Color { White, Black };
-    enum class Type { Pawn };
+    enum class Color { White = 0, Black };
+    enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
 
     Piece(Cell cell, Color color, int size = 50);
     virtual std::vector<std::vector<Cell>> getMoves() const = 0;

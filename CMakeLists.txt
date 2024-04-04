@@ -16,6 +16,11 @@ add_executable(CMakeSFMLProject
     src/Board.cpp src/Board.hpp src/Cell.hpp
     src/pieces/Piece.cpp src/pieces/Piece.hpp
     src/pieces/Pawn.cpp src/pieces/Pawn.hpp
+    src/pieces/Tower.cpp src/pieces/Tower.hpp
+    src/pieces/Knight.cpp src/pieces/Knight.hpp
+    src/pieces/Bishop.cpp src/pieces/Bishop.hpp
+    src/pieces/Queen.cpp src/pieces/Queen.hpp
+    src/pieces/King.cpp src/pieces/King.hpp
 )
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)

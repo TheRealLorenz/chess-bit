@@ -6,7 +6,6 @@ Pawn::Pawn(Cell cell, Color color, const int size) : Piece(cell, color, size) {
 
 std::vector<std::vector<Cell>> Pawn::getMoves() const {
     auto moves = std::vector<std::vector<Cell>>(1);
-    moves.push_back(std::vector<Cell>(1));
 
     switch (color) {
         case Piece::Color::White: {

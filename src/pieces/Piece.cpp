@@ -29,6 +29,21 @@ void Piece::loadTexture(Type type) {
     switch (type) {
         case Type::Pawn:
             break;
+        case Type::Tower:
+            x += width;
+            break;
+        case Type::Knight:
+            x += 2 * width;
+            break;
+        case Type::Bishop:
+            x += 3 * width;
+            break;
+        case Type::Queen:
+            x += 4 * width;
+            break;
+        case Type::King:
+            x += 5 * width;
+            break;
     }
 
     if (color == Color::White) {

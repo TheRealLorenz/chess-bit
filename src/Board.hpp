@@ -34,6 +34,7 @@ private:
     void resetColors();
     void highlightMoves();
     void move(Piece *p, Cell cell);
+    void populate(const int schema[64][2]);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
