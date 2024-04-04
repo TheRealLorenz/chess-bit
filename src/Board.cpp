@@ -201,7 +201,12 @@ void Board::onMouseEvent(const sf::Event& event) {
     if (!selectedPiece) return;
 
     if (clickedPiece && selectedPiece->getColor() == clickedPiece->getColor()) {
-        unselect();
+        if (selectedPiece == clickedPiece) {
+            unselect();
+            return;
+        }
+        DEBUG("[DEBUG] Selecting another piece with the same color"
+              << std::endl);
         select(clickedPiece);
         return;
     }
