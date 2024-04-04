@@ -1,10 +1,10 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 
 #include "Board.hpp"
-#include "SFML/Graphics/Vertex.hpp"
 #include "debug.hpp"
 #include "pieces/Bishop.hpp"
 #include "pieces/King.hpp"
@@ -70,36 +70,30 @@ void Board::populate(const int schema[64][2]) {
             switch (type) {
                 case Piece::Type::Pawn:
                     pieces[row * CELL_IN_ROW + column] =
-                        new Pawn({row, column}, color);
+                        std::shared_ptr<Piece>(new Pawn({row, column}, color));
                     break;
                 case Piece::Type::Tower:
                     pieces[row * CELL_IN_ROW + column] =
-                        new Tower({row, column}, color);
+                        std::shared_ptr<Piece>(new Tower({row, column}, color));
                     break;
                 case Piece::Type::Knight:
-                    pieces[row * CELL_IN_ROW + column] =
-                        new Knight({row, column}, color);
+                    pieces[row * CELL_IN_ROW + column] = std::shared_ptr<Piece>(
+                        new Knight({row, column}, color));
                     break;
                 case Piece::Type::Bishop:
-                    pieces[row * CELL_IN_ROW + column] =
-                        new Bishop({row, column}, color);
+                    pieces[row * CELL_IN_ROW + column] = std::shared_ptr<Piece>(
+                        new Bishop({row, column}, color));
                     break;
                 case Piece::Type::Queen:
                     pieces[row * CELL_IN_ROW + column] =
-                        new Queen({row, column}, color);
+                        std::shared_ptr<Piece>(new Queen({row, column}, color));
                     break;
                 case Piece::Type::King:
                     pieces[row * CELL_IN_ROW + column] =
-                        new King({row, column}, color);
+                        std::shared_ptr<Piece>(new King({row, column}, color));
                     break;
             }
         }
-    }
-}
-
-Board::~Board() {
-    for (auto& p : pieces) {
-        if (p) delete p;
     }
 }
 
@@ -128,7 +122,7 @@ void Board::setTile(sf::Vertex *vertices, Tile tile) {
     vertices[5].texCoords = sf::Vector2f(x + width, y + height);
 }
 
-Piece *const Board::getPiece(Cell cell) const {
+const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
     return pieces[cell.row * CELL_IN_ROW + cell.column];
 }
 
@@ -148,7 +142,7 @@ void Board::highlightMoves() {
     int tile = 1;
     for (auto& moveSet : moves) {
         for (auto& cell : moveSet) {
-            auto otherPiece = getPiece(cell);
+            auto& otherPiece = getPiece(cell);
             if (otherPiece &&
                 otherPiece->getColor() == selectedPiece->getColor())
                 break;
@@ -168,7 +162,7 @@ void Board::highlightMoves() {
     }
 }
 
-void Board::select(Piece *p) {
+void Board::select(const std::shared_ptr<Piece>& p) {
     if (!p) return;
 
     selectedPiece = p;
@@ -180,11 +174,11 @@ void Board::unselect() {
     highlightTiles.clear();
 }
 
-void Board::move(Piece *p, Cell cell) {
+void Board::move(const std::shared_ptr<Piece>& p, Cell cell) {
     auto oldCell = p->getCell();
     p->setCell(cell);
-    pieces[cell.row * CELL_IN_ROW + cell.column] = p;
-    pieces[oldCell.row * CELL_IN_ROW + oldCell.column] = nullptr;
+    pieces[cell.row * CELL_IN_ROW + cell.column] =
+        std::move(pieces[oldCell.row * CELL_IN_ROW + oldCell.column]);
 }
 
 void Board::onMouseEvent(const sf::Event& event) {
@@ -193,7 +187,7 @@ void Board::onMouseEvent(const sf::Event& event) {
 
     const int column = (event.mouseButton.x - boardPosition.x) / cell_size;
     const int row = (event.mouseButton.y - boardPosition.y) / cell_size;
-    auto clickedPiece = getPiece({row, column});
+    auto& clickedPiece = getPiece({row, column});
 
     DEBUG("[DEBUG] Clicked " << (clickedPiece ? "full" : "empty") << " cell ("
                              << column << ", " << row << ")" << std::endl);
@@ -216,18 +210,16 @@ void Board::onMouseEvent(const sf::Event& event) {
 
     for (auto& moveSet : moves) {
         for (auto& cell : moveSet) {
-            auto otherPiece = getPiece(cell);
+            auto& otherPiece = getPiece(cell);
             if (otherPiece && cell != Cell{row, column}) break;
 
-            if (!otherPiece && cell == Cell{row, column}) {
-                DEBUG("[DEBUG] Moving to empty cell" << std::endl);
+            if (cell == Cell{row, column}) {
+                DEBUG("[DEBUG] Moving to cell" << std::endl);
+                if (otherPiece) {
+                    DEBUG("[DEBUG] Eating enemy" << std::endl);
+                }
                 move(selectedPiece, cell);
                 unselect();
-                return;
-            }
-
-            if (cell == Cell{row, column}) {
-                DEBUG("[DEBUG] Eating enemy" << std::endl);
                 return;
             }
         }

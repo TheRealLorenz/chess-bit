@@ -6,6 +6,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Window/Event.hpp>
+#include <memory>
 
 #include "pieces/Piece.hpp"
 
@@ -14,7 +15,6 @@ public:
     enum class Tile { Light, Dark, Highlight };
 
     explicit Board(const int size = 400);
-    ~Board();
     const sf::FloatRect getBounds() const { return baseTiles.getBounds(); }
     void onMouseEvent(const sf::Event& event);
 
@@ -23,19 +23,19 @@ private:
     // It's a square, so I only need a single value
     const int size;
     static const int CELL_IN_ROW = 8;
-    Piece *selectedPiece = nullptr;
+    std::shared_ptr<Piece> selectedPiece = nullptr;
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;
     sf::Texture texture_;
-    // Init array to nullptrs
-    Piece *pieces[CELL_IN_ROW * CELL_IN_ROW] = {};
+    std::vector<std::shared_ptr<Piece>> pieces =
+        std::vector<std::shared_ptr<Piece>>(CELL_IN_ROW * CELL_IN_ROW);
 
-    Piece *const getPiece(Cell cell) const;
-    void select(Piece *p);
+    const std::shared_ptr<Piece>& getPiece(Cell cell) const;
+    void select(const std::shared_ptr<Piece>& p);
     void unselect();
     void highlightMoves();
-    void move(Piece *p, Cell cell);
+    void move(const std::shared_ptr<Piece>& p, Cell cell);
     void populate(const int schema[64][2]);
     void setTile(sf::Vertex *vertices, Tile tile);
 
@@ -51,7 +51,7 @@ private:
         target.draw(baseTiles, states);
         target.draw(highlightTiles, states);
 
-        for (Piece *p : pieces) {
+        for (auto& p : pieces) {
             if (p) target.draw(*p, states);
         }
     }
