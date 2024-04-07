@@ -17,7 +17,7 @@ public:
     Piece(Cell cell, Color color, int size = 50);
     virtual std::vector<std::vector<Cell>> getMoves() const = 0;
     Cell getCell() const { return {row, column}; };
-    void setCell(Cell cell);
+    virtual void setCell(Cell cell);
     const Color getColor() const { return color; }
 
 protected:

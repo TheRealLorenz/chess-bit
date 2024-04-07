@@ -24,3 +24,8 @@ std::vector<std::vector<Cell>> Pawn::getMoves() const {
 
     return moves;
 }
+
+void Pawn::setCell(Cell cell) {
+    Piece::setCell(cell);
+    firstMove = false;
+}
