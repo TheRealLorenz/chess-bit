@@ -1,14 +1,15 @@
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 #include <memory>
 
 #include "Game.hpp"
-#include "SFML/Graphics/RenderWindow.hpp"
-#include "SFML/Window/Event.hpp"
-#include "SFML/Window/Mouse.hpp"
 #include "debug.hpp"
 
-Game::Game() {
-    window = std::unique_ptr<sf::RenderWindow>(
-        new sf::RenderWindow{{800u, 600u}, "Chess Bit"});
+Game::Game() : board(Board(400)) {
+    window = std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow{
+        {400u, 400u}, "Chess Bit", sf::Style::Titlebar | sf::Style::Close});
     window->setFramerateLimit(60);
 }
 
@@ -16,13 +17,6 @@ void Game::on_event(const sf::Event& event) {
     switch (event.type) {
         case sf::Event::Closed: {
             window->close();
-            break;
-        }
-        case sf::Event::Resized: {
-            // update the view to the new size of the window
-            sf::FloatRect visibleArea(0.f, 0.f, event.size.width,
-                                      event.size.height);
-            window->setView(sf::View(visibleArea));
             break;
         }
         case sf::Event::MouseButtonPressed: {
