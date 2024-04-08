@@ -2,7 +2,8 @@
 
 #include "King.hpp"
 
-King::King(Cell cell, Color color, const int size) : Piece(cell, color, size) {
+King::King(Cell cell, Color color, bool hasMoved, const int size)
+    : Piece(cell, color, hasMoved, size) {
     loadTexture(Type::King);
 }
 

@@ -7,7 +7,7 @@
 
 class Bishop : public virtual Piece {
 public:
-    Bishop(Cell cell, Color color, const int size = 50);
+    Bishop(Cell cell, Color color, bool hasMoved = false, const int size = 50);
 
     virtual std::vector<Cell> getMoves(
         const std::vector<std::shared_ptr<Piece>>& pieces) const;

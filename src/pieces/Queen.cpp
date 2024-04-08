@@ -2,10 +2,10 @@
 
 #include "Queen.hpp"
 
-Queen::Queen(Cell cell, Color color, const int size)
-    : Piece(cell, color, size),
-      Tower(cell, color, size),
-      Bishop(cell, color, size) {
+Queen::Queen(Cell cell, Color color, bool hasMoved, const int size)
+    : Piece(cell, color, hasMoved, size),
+      Tower(cell, color, hasMoved, size),
+      Bishop(cell, color, hasMoved, size) {
     Tower::loadTexture(Type::Queen);
 }
 

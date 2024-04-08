@@ -2,8 +2,8 @@
 
 #include "Bishop.hpp"
 
-Bishop::Bishop(Cell cell, Color color, const int size)
-    : Piece(cell, color, size) {
+Bishop::Bishop(Cell cell, Color color, bool hasMoved, const int size)
+    : Piece(cell, color, hasMoved, size) {
     loadTexture(Type::Bishop);
 }
 

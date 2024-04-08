@@ -14,17 +14,18 @@ public:
     enum class Color { White = 0, Black };
     enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
 
-    Piece(Cell cell, Color color, int size = 50);
+    Piece(Cell cell, Color color, bool hasMoved = false, int size = 50);
     virtual std::vector<Cell> getMoves(
         const std::vector<std::shared_ptr<Piece>>& pieces) const = 0;
     Cell getCell() const { return {row, column}; };
-    virtual void setCell(Cell cell);
+    void setCell(Cell cell);
     const Color getColor() const { return color; }
 
 protected:
     void loadTexture(Type type);
     int row, column;
     const Color color;
+    bool hasMoved;
 
 private:
     sf::Texture texture_;

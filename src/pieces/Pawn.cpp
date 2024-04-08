@@ -1,13 +1,14 @@
 #include "Pawn.hpp"
 
-Pawn::Pawn(Cell cell, Color color, const int size) : Piece(cell, color, size) {
+Pawn::Pawn(Cell cell, Color color, bool hasMoved, const int size)
+    : Piece(cell, color, hasMoved, size) {
     loadTexture(Type::Pawn);
 }
 
 std::vector<Cell> Pawn::getMoves(
     const std::vector<std::shared_ptr<Piece>>& pieces) const {
     std::vector<Cell> moves;
-    const int maxDistance = firstMove ? 2 : 1;
+    const int maxDistance = hasMoved ? 1 : 2;
     moves.reserve(4);
 
     switch (color) {
@@ -46,9 +47,4 @@ std::vector<Cell> Pawn::getMoves(
     }
 
     return moves;
-}
-
-void Pawn::setCell(Cell cell) {
-    Piece::setCell(cell);
-    firstMove = false;
 }

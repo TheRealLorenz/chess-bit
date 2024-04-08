@@ -8,7 +8,7 @@
 
 class Queen : public Tower, public Bishop {
 public:
-    Queen(Cell cell, Color color, const int size = 50);
+    Queen(Cell cell, Color color, bool hasMoved = false, const int size = 50);
 
     virtual std::vector<Cell> getMoves(
         const std::vector<std::shared_ptr<Piece>>& pieces) const;
