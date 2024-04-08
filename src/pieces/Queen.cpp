@@ -9,9 +9,10 @@ Queen::Queen(Cell cell, Color color, const int size)
     Tower::loadTexture(Type::Queen);
 }
 
-std::vector<std::vector<Cell>> Queen::getMoves() const {
-    auto moves = Tower::getMoves();
-    auto diagonalMoves(Bishop::getMoves());
+std::vector<Cell> Queen::getMoves(
+    const std::vector<std::shared_ptr<Piece>>& pieces) const {
+    auto moves = Tower::getMoves(pieces);
+    auto diagonalMoves(Bishop::getMoves(pieces));
     // For performance
     moves.reserve(moves.size() +
                   std::distance(diagonalMoves.begin(), diagonalMoves.end()));

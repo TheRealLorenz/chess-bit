@@ -130,7 +130,7 @@ void Board::highlightMoves() {
     if (!selectedPiece) return;
     highlightTiles.clear();
 
-    auto moves = selectedPiece->getMoves();
+    auto moves = selectedPiece->getMoves(pieces);
     auto cell = selectedPiece->getCell();
     auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
 
@@ -140,25 +140,14 @@ void Board::highlightMoves() {
     setTile(&highlightTiles[0], Tile::Highlight);
 
     int tile = 1;
-    for (auto& moveSet : moves) {
-        for (auto& cell : moveSet) {
-            auto& otherPiece = getPiece(cell);
-            if (otherPiece &&
-                otherPiece->getColor() == selectedPiece->getColor())
-                break;
+    for (auto& cell : moves) {
+        auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
 
-            auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
-
-            for (int i = 0; i < 6; i++) {
-                highlightTiles.append(sf::Vertex(vertices[i].position));
-            }
-            setTile(&highlightTiles[tile * 6], Tile::Highlight);
-            tile++;
-
-            if (otherPiece &&
-                otherPiece->getColor() != selectedPiece->getColor())
-                break;
+        for (int i = 0; i < 6; i++) {
+            highlightTiles.append(sf::Vertex(vertices[i].position));
         }
+        setTile(&highlightTiles[tile * 6], Tile::Highlight);
+        tile++;
     }
 }
 
@@ -211,22 +200,18 @@ void Board::onMouseEvent(const sf::Event& event) {
         return;
     }
 
-    auto moves = selectedPiece->getMoves();
+    auto moves = selectedPiece->getMoves(pieces);
 
-    for (auto& moveSet : moves) {
-        for (auto& cell : moveSet) {
+    for (auto& cell : moves) {
+        if (cell == Cell{row, column}) {
             auto& otherPiece = getPiece(cell);
-            if (otherPiece && cell != Cell{row, column}) break;
-
-            if (cell == Cell{row, column}) {
-                DEBUG("[DEBUG] Moving to cell" << std::endl);
-                if (otherPiece) {
-                    DEBUG("[DEBUG] Eating enemy" << std::endl);
-                }
-                move(selectedPiece, cell);
-                unselect();
-                return;
+            DEBUG("[DEBUG] Moving to cell" << std::endl);
+            if (otherPiece) {
+                DEBUG("[DEBUG] Eating enemy" << std::endl);
             }
+            move(selectedPiece, cell);
+            unselect();
+            return;
         }
     }
 

@@ -10,5 +10,6 @@ class Queen : public Tower, public Bishop {
 public:
     Queen(Cell cell, Color color, const int size = 50);
 
-    virtual std::vector<std::vector<Cell>> getMoves() const;
+    virtual std::vector<Cell> getMoves(
+        const std::vector<std::shared_ptr<Piece>>& pieces) const;
 };

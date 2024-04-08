@@ -15,7 +15,8 @@ public:
     enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
 
     Piece(Cell cell, Color color, int size = 50);
-    virtual std::vector<std::vector<Cell>> getMoves() const = 0;
+    virtual std::vector<Cell> getMoves(
+        const std::vector<std::shared_ptr<Piece>>& pieces) const = 0;
     Cell getCell() const { return {row, column}; };
     virtual void setCell(Cell cell);
     const Color getColor() const { return color; }
