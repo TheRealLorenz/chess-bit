@@ -24,7 +24,7 @@ private:
     const int size;
     static const int CELL_IN_ROW = 8;
     std::shared_ptr<Piece> selectedPiece = nullptr;
-    std::shared_ptr<Piece> enPassant = nullptr;
+    std::shared_ptr<Piece> capturableEnPassant = nullptr;
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;
