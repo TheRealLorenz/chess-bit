@@ -35,7 +35,7 @@ private:
     void select(const std::shared_ptr<Piece>& p);
     void unselect();
     void highlightMoves();
-    void move(const std::shared_ptr<Piece>& p, Cell cell);
+    void movePiece(const std::shared_ptr<Piece>& p, Cell cell);
     void populate(const int schema[64][2]);
     void setTile(sf::Vertex *vertices, Tile tile);
 

@@ -7,9 +7,9 @@ King::King(Cell cell, Color color, bool hasMoved, const int size)
     loadTexture(Type::King);
 }
 
-std::vector<Cell> King::getMoves(
+std::vector<Move> King::getMoves(
     const std::vector<std::shared_ptr<Piece>>& pieces) const {
-    std::vector<Cell> moves;
+    std::vector<Move> moves;
     moves.reserve(8);
 
     for (int i = std::max(0, row - 1); i <= std::min(7, row + 1); i++) {
@@ -19,7 +19,7 @@ std::vector<Cell> King::getMoves(
                 (pieces[i * 8 + j] && pieces[i * 8 + j]->getColor() == color))
                 continue;
 
-            moves.push_back({i, j});
+            moves.push_back(Move({i, j}));
         }
     }
 

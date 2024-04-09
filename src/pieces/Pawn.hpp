@@ -8,6 +8,6 @@ class Pawn : public Piece {
 public:
     Pawn(Cell cell, Color color, bool hasMoved = false, const int size = 50);
 
-    virtual std::vector<Cell> getMoves(
+    virtual std::vector<Move> getMoves(
         const std::vector<std::shared_ptr<Piece>>& pieces) const;
 };

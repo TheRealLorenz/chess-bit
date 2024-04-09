@@ -9,7 +9,7 @@ Queen::Queen(Cell cell, Color color, bool hasMoved, const int size)
     Tower::loadTexture(Type::Queen);
 }
 
-std::vector<Cell> Queen::getMoves(
+std::vector<Move> Queen::getMoves(
     const std::vector<std::shared_ptr<Piece>>& pieces) const {
     auto moves = Tower::getMoves(pieces);
     auto diagonalMoves(Bishop::getMoves(pieces));

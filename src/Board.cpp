@@ -140,8 +140,9 @@ void Board::highlightMoves() {
     setTile(&highlightTiles[0], Tile::Highlight);
 
     int tile = 1;
-    for (auto& cell : moves) {
-        auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
+    for (auto& move : moves) {
+        auto vertices =
+            &baseTiles[(move.cell.column + move.cell.row * size) * 6];
 
         for (int i = 0; i < 6; i++) {
             highlightTiles.append(sf::Vertex(vertices[i].position));
@@ -163,7 +164,7 @@ void Board::unselect() {
     highlightTiles.clear();
 }
 
-void Board::move(const std::shared_ptr<Piece>& p, Cell cell) {
+void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
     auto oldCell = p->getCell();
     p->setCell(cell);
     pieces[cell.row * CELL_IN_ROW + cell.column] =
@@ -202,14 +203,14 @@ void Board::onMouseEvent(const sf::Event& event) {
 
     auto moves = selectedPiece->getMoves(pieces);
 
-    for (auto& cell : moves) {
-        if (cell == Cell{row, column}) {
-            auto& otherPiece = getPiece(cell);
+    for (auto& move : moves) {
+        if (move.cell == Cell{row, column}) {
+            auto& otherPiece = getPiece(move.cell);
             DEBUG("[DEBUG] Moving to cell" << std::endl);
             if (otherPiece) {
                 DEBUG("[DEBUG] Eating enemy" << std::endl);
             }
-            move(selectedPiece, cell);
+            movePiece(selectedPiece, move.cell);
             unselect();
             return;
         }

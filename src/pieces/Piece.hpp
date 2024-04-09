@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "../Cell.hpp"
+#include "../Move.hpp"
 
 class Piece : public sf::Drawable, private sf::Transformable {
 public:
@@ -16,7 +16,7 @@ public:
     enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
 
     Piece(Cell cell, Color color, bool hasMoved = false, int size = 50);
-    virtual std::vector<Cell> getMoves(
+    virtual std::vector<Move> getMoves(
         const std::vector<std::shared_ptr<Piece>>& pieces) const = 0;
     Cell getCell() const { return {row, column}; };
     void setCell(Cell cell);

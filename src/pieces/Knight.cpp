@@ -5,9 +5,9 @@ Knight::Knight(Cell cell, Color color, bool hasMoved, const int size)
     loadTexture(Type::Knight);
 }
 
-std::vector<Cell> Knight::getMoves(
+std::vector<Move> Knight::getMoves(
     const std::vector<std::shared_ptr<Piece>>& pieces) const {
-    std::vector<Cell> moves;
+    std::vector<Move> moves;
     moves.reserve(8);
 
     // Top
@@ -15,12 +15,12 @@ std::vector<Cell> Knight::getMoves(
         if (column > 0 &&
             (!pieces[(row - 2) * 8 + column - 1] ||
              pieces[(row - 2) * 8 + column - 1]->getColor() != color)) {
-            moves.push_back({row - 2, column - 1});
+            moves.push_back(Move({row - 2, column - 1}));
         }
         if (column < 7 &&
             (!pieces[(row - 2) * 8 + column + 1] ||
              pieces[(row - 2) * 8 + column + 1]->getColor() != color)) {
-            moves.push_back({row - 2, column + 1});
+            moves.push_back(Move({row - 2, column + 1}));
         }
     }
 
@@ -29,12 +29,12 @@ std::vector<Cell> Knight::getMoves(
         if (row > 0 &&
             (!pieces[(row - 1) * 8 + column + 2] ||
              pieces[(row - 1) * 8 + column + 2]->getColor() != color)) {
-            moves.push_back({row - 1, column + 2});
+            moves.push_back(Move({row - 1, column + 2}));
         }
         if (row < 7 &&
             (!pieces[(row + 1) * 8 + column + 2] ||
              pieces[(row + 1) * 8 + column + 2]->getColor() != color)) {
-            moves.push_back({row + 1, column + 2});
+            moves.push_back(Move({row + 1, column + 2}));
         }
     }
 
@@ -43,12 +43,12 @@ std::vector<Cell> Knight::getMoves(
         if (column > 0 &&
             (!pieces[(row + 2) * 8 + column - 1] ||
              pieces[(row + 2) * 8 + column - 1]->getColor() != color)) {
-            moves.push_back({row + 2, column - 1});
+            moves.push_back(Move({row + 2, column - 1}));
         }
         if (column < 7 &&
             (!pieces[(row + 2) * 8 + column + 1] ||
              pieces[(row + 2) * 8 + column + 1]->getColor() != color)) {
-            moves.push_back({row + 2, column + 1});
+            moves.push_back(Move({row + 2, column + 1}));
         }
     }
 
@@ -57,12 +57,12 @@ std::vector<Cell> Knight::getMoves(
         if (row > 0 &&
             (!pieces[(row - 1) * 8 + column - 2] ||
              pieces[(row - 1) * 8 + column - 2]->getColor() != color)) {
-            moves.push_back({row - 1, column - 2});
+            moves.push_back(Move({row - 1, column - 2}));
         }
         if (row < 7 &&
             (!pieces[(row + 1) * 8 + column - 2] ||
              pieces[(row + 1) * 8 + column - 2]->getColor() != color)) {
-            moves.push_back({row + 1, column - 2});
+            moves.push_back(Move({row + 1, column - 2}));
         }
     }
 
