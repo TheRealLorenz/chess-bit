@@ -1,8 +1,6 @@
 #pragma once
 
 #include <SFML/System/Vector2.hpp>
-#include <memory>
-#include <vector>
 
 #include "Piece.hpp"
 

@@ -5,6 +5,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <memory>
 #include <vector>
 
 #include "../Cell.hpp"
