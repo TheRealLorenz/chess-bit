@@ -17,7 +17,8 @@ public:
 
     Piece(Cell cell, Color color, bool hasMoved = false, int size = 50);
     virtual std::vector<Move> getMoves(
-        const std::vector<std::shared_ptr<Piece>>& pieces) const = 0;
+        const std::vector<std::shared_ptr<Piece>>& pieces,
+        const std::shared_ptr<Piece>& enPassant) const = 0;
     Cell getCell() const { return {row, column}; };
     void setCell(Cell cell);
     const Color getColor() const { return color; }

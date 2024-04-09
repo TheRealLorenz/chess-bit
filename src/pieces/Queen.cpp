@@ -10,9 +10,10 @@ Queen::Queen(Cell cell, Color color, bool hasMoved, const int size)
 }
 
 std::vector<Move> Queen::getMoves(
-    const std::vector<std::shared_ptr<Piece>>& pieces) const {
-    auto moves = Tower::getMoves(pieces);
-    auto diagonalMoves(Bishop::getMoves(pieces));
+    const std::vector<std::shared_ptr<Piece>>& pieces,
+    const std::shared_ptr<Piece>& enPassant) const {
+    auto moves = Tower::getMoves(pieces, enPassant);
+    auto diagonalMoves(Bishop::getMoves(pieces, enPassant));
     // For performance
     moves.reserve(moves.size() +
                   std::distance(diagonalMoves.begin(), diagonalMoves.end()));

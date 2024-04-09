@@ -8,7 +8,8 @@ Bishop::Bishop(Cell cell, Color color, bool hasMoved, const int size)
 }
 
 std::vector<Move> Bishop::getMoves(
-    const std::vector<std::shared_ptr<Piece>>& pieces) const {
+    const std::vector<std::shared_ptr<Piece>>& pieces,
+    const std::shared_ptr<Piece>& enPassant) const {
     std::vector<Move> moves;
 
     // From piece to top-right border

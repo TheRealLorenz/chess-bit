@@ -24,6 +24,7 @@ private:
     const int size;
     static const int CELL_IN_ROW = 8;
     std::shared_ptr<Piece> selectedPiece = nullptr;
+    std::shared_ptr<Piece> enPassant = nullptr;
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;
@@ -32,6 +33,7 @@ private:
         std::vector<std::shared_ptr<Piece>>(CELL_IN_ROW * CELL_IN_ROW);
 
     const std::shared_ptr<Piece>& getPiece(Cell cell) const;
+    void capturePiece(Cell cell);
     void select(const std::shared_ptr<Piece>& p);
     void unselect();
     void highlightMoves();

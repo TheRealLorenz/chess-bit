@@ -8,7 +8,8 @@ King::King(Cell cell, Color color, bool hasMoved, const int size)
 }
 
 std::vector<Move> King::getMoves(
-    const std::vector<std::shared_ptr<Piece>>& pieces) const {
+    const std::vector<std::shared_ptr<Piece>>& pieces,
+    const std::shared_ptr<Piece>& enPassant) const {
     std::vector<Move> moves;
     moves.reserve(8);
 

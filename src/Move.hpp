@@ -3,7 +3,7 @@
 #include "Cell.hpp"
 
 struct Move {
-    enum class Type { Regualar, EnPassant, Castle };
+    enum class Type { Regualar, DoublePawn, Castle, EnPassantCapture };
 
     explicit Move(Cell cell, Type type = Move::Type::Regualar)
         : type(type), cell(cell) {}

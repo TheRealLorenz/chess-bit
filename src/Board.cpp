@@ -126,11 +126,21 @@ const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
     return pieces[cell.row * CELL_IN_ROW + cell.column];
 }
 
+void Board::capturePiece(Cell cell) {
+    pieces[cell.row * CELL_IN_ROW + cell.column] = nullptr;
+    if (selectedPiece && selectedPiece->getCell() == cell) {
+        selectedPiece = nullptr;
+    }
+    if (enPassant && enPassant->getCell() == cell) {
+        enPassant = nullptr;
+    }
+}
+
 void Board::highlightMoves() {
     if (!selectedPiece) return;
     highlightTiles.clear();
 
-    auto moves = selectedPiece->getMoves(pieces);
+    auto moves = selectedPiece->getMoves(pieces, enPassant);
     auto cell = selectedPiece->getCell();
     auto vertices = &baseTiles[(cell.column + cell.row * size) * 6];
 
@@ -201,7 +211,7 @@ void Board::onMouseEvent(const sf::Event& event) {
         return;
     }
 
-    auto moves = selectedPiece->getMoves(pieces);
+    auto moves = selectedPiece->getMoves(pieces, enPassant);
 
     for (auto& move : moves) {
         if (move.cell == Cell{row, column}) {
@@ -209,6 +219,20 @@ void Board::onMouseEvent(const sf::Event& event) {
             DEBUG("[DEBUG] Moving to cell" << std::endl);
             if (otherPiece) {
                 DEBUG("[DEBUG] Eating enemy" << std::endl);
+            }
+            switch (move.type) {
+                case Move::Type::Castle:
+                    break;
+                case Move::Type::DoublePawn:
+                    DEBUG("[DEBUG] Piece is vulnerable to en passant"
+                          << std::endl);
+                    enPassant = selectedPiece;
+                    break;
+                case Move::Type::EnPassantCapture:
+                    capturePiece(enPassant->getCell());
+                    break;
+                case Move::Type::Regualar:
+                    break;
             }
             movePiece(selectedPiece, move.cell);
             unselect();

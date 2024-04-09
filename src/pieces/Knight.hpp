@@ -9,6 +9,7 @@ class Knight : public Piece {
 public:
     Knight(Cell cell, Color color, bool hasMoved = false, const int size = 50);
 
-    virtual std::vector<Move> getMoves(
-        const std::vector<std::shared_ptr<Piece>>& pieces) const;
+    std::vector<Move> getMoves(
+        const std::vector<std::shared_ptr<Piece>>& pieces,
+        const std::shared_ptr<Piece>& enPassant) const override;
 };
