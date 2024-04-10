@@ -9,11 +9,12 @@ Board::Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
     vertices.resize(6);
 
     vertices[0].position = sf::Vector2f(0, 0);
-    vertices[1].position = sf::Vector2f(sizePx, 0);
-    vertices[2].position = sf::Vector2f(0, sizePx);
-    vertices[3].position = sf::Vector2f(sizePx, 0);
-    vertices[4].position = sf::Vector2f(0, sizePx);
-    vertices[5].position = sf::Vector2f(sizePx, sizePx);
+    vertices[1].position = sf::Vector2f(sizePx * scaleFactor, 0);
+    vertices[2].position = sf::Vector2f(0, sizePx * scaleFactor);
+    vertices[3].position = sf::Vector2f(sizePx * scaleFactor, 0);
+    vertices[4].position = sf::Vector2f(0, sizePx * scaleFactor);
+    vertices[5].position =
+        sf::Vector2f(sizePx * scaleFactor, sizePx * scaleFactor);
 
     setCell(cell);
     this->hasMoved = hasMoved;
@@ -64,6 +65,7 @@ void Board::Piece::setCell(Cell cell) {
     row = cell.row;
     column = cell.column;
     hasMoved = true;
+    const float delta = sizePx * (1 - scaleFactor) / 2;
 
-    setPosition(sf::Vector2f(column * sizePx, row * sizePx));
+    setPosition(sf::Vector2f(column * sizePx + delta, row * sizePx + delta));
 }

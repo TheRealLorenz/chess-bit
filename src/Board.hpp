@@ -34,6 +34,10 @@ public:
         sf::Texture texture;
         sf::VertexArray vertices;
         const int sizePx;
+        // Scaling factor to apply to the piece.
+        // A scaling factor of 1 makes the piece as big
+        // as the cell itself.
+        static constexpr float scaleFactor = 0.8;
 
         virtual void draw(sf::RenderTarget& target,
                           sf::RenderStates states) const {
