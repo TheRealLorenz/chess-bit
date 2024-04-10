@@ -1,15 +1,10 @@
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
-#include <vector>
+#include "../Board.hpp"
 
-#include "Piece.hpp"
-
-class Tower : public virtual Piece {
+class Tower : public virtual Board::Piece {
 public:
-    Tower(Cell cell, Color color, bool hasMoved = false, const int size = 50);
+    Tower(Cell cell, Color color, bool hasMoved = false, const int sizePx = 50);
 
-    virtual std::vector<Move> getMoves(
-        const std::vector<std::shared_ptr<Piece>>& pieces,
-        const std::shared_ptr<Piece>& enPassant) const override;
+    virtual std::vector<Move> getMoves(const Board& board) const override;
 };

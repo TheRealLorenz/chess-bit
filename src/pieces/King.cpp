@@ -2,14 +2,12 @@
 
 #include "King.hpp"
 
-King::King(Cell cell, Color color, bool hasMoved, const int size)
-    : Piece(cell, color, hasMoved, size) {
+King::King(Cell cell, Color color, bool hasMoved, const int sizePx)
+    : Piece(cell, color, hasMoved, sizePx) {
     loadTexture(Type::King);
 }
 
-std::vector<Move> King::getMoves(
-    const std::vector<std::shared_ptr<Piece>>& pieces,
-    const std::shared_ptr<Piece>& enPassant) const {
+std::vector<Move> King::getMoves(const Board& board) const {
     std::vector<Move> moves;
     moves.reserve(8);
 
@@ -17,7 +15,8 @@ std::vector<Move> King::getMoves(
         for (int j = std::max(0, column - 1); j <= std::min(7, column + 1);
              j++) {
             if (i == row && j == column ||
-                (pieces[i * 8 + j] && pieces[i * 8 + j]->getColor() == color))
+                (board.getPiece({i, j}) &&
+                 board.getPiece({i, j})->getColor() == color))
                 continue;
 
             moves.push_back(Move({i, j}));

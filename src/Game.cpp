@@ -23,7 +23,7 @@ void Game::on_event(const sf::Event& event) {
             if (event.mouseButton.button == sf::Mouse::Left) {
                 if (board.getBounds().contains(sf::Vector2f(
                         event.mouseButton.x, event.mouseButton.y))) {
-                    board.onMouseEvent(event);
+                    board.onClick(event);
                 }
                 break;
             }

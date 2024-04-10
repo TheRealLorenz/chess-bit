@@ -2,18 +2,16 @@
 
 #include "Queen.hpp"
 
-Queen::Queen(Cell cell, Color color, bool hasMoved, const int size)
-    : Piece(cell, color, hasMoved, size),
-      Tower(cell, color, hasMoved, size),
-      Bishop(cell, color, hasMoved, size) {
+Queen::Queen(Cell cell, Color color, bool hasMoved, const int sizePx)
+    : Piece(cell, color, hasMoved, sizePx),
+      Tower(cell, color, hasMoved, sizePx),
+      Bishop(cell, color, hasMoved, sizePx) {
     Tower::loadTexture(Type::Queen);
 }
 
-std::vector<Move> Queen::getMoves(
-    const std::vector<std::shared_ptr<Piece>>& pieces,
-    const std::shared_ptr<Piece>& enPassant) const {
-    auto moves = Tower::getMoves(pieces, enPassant);
-    auto diagonalMoves(Bishop::getMoves(pieces, enPassant));
+std::vector<Move> Queen::getMoves(const Board& board) const {
+    auto moves = Tower::getMoves(board);
+    auto diagonalMoves(Bishop::getMoves(board));
     // For performance
     moves.reserve(moves.size() +
                   std::distance(diagonalMoves.begin(), diagonalMoves.end()));

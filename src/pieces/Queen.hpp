@@ -1,16 +1,11 @@
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
-#include <vector>
-
 #include "Bishop.hpp"
 #include "Tower.hpp"
 
 class Queen : public Tower, public Bishop {
 public:
-    Queen(Cell cell, Color color, bool hasMoved = false, const int size = 50);
+    Queen(Cell cell, Color color, bool hasMoved = false, const int sizePx = 50);
 
-    std::vector<Move> getMoves(
-        const std::vector<std::shared_ptr<Piece>>& pieces,
-        const std::shared_ptr<Piece>& enPassant) const override;
+    std::vector<Move> getMoves(const Board& board) const override;
 };

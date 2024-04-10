@@ -12,16 +12,15 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(CMakeSFMLProject
     src/main.cpp src/debug.hpp
-    src/Game.cpp src/Game.hpp
-    src/Board.cpp src/Board.hpp
+    src/Game.hpp src/Game.cpp
+    src/Board.hpp src/Board.cpp src/Piece.cpp
     src/Cell.hpp src/Move.hpp
-    src/pieces/Piece.cpp src/pieces/Piece.hpp
-    src/pieces/Pawn.cpp src/pieces/Pawn.hpp
-    src/pieces/Tower.cpp src/pieces/Tower.hpp
-    src/pieces/Knight.cpp src/pieces/Knight.hpp
-    src/pieces/Bishop.cpp src/pieces/Bishop.hpp
-    src/pieces/Queen.cpp src/pieces/Queen.hpp
-    src/pieces/King.cpp src/pieces/King.hpp
+    src/pieces/Pawn.hpp src/pieces/Pawn.cpp
+    src/pieces/Tower.hpp src/pieces/Tower.cpp
+    src/pieces/Knight.hpp src/pieces/Knight.cpp
+    src/pieces/Bishop.hpp src/pieces/Bishop.cpp
+    src/pieces/Queen.hpp src/pieces/Queen.cpp
+    src/pieces/King.hpp src/pieces/King.cpp
 )
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)

@@ -8,31 +8,70 @@
 #include <SFML/Window/Event.hpp>
 #include <memory>
 
-#include "pieces/Piece.hpp"
+#include "Move.hpp"
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:
+    class Piece : public sf::Drawable, private sf::Transformable {
+    public:
+        enum class Color { White = 0, Black };
+        enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
+
+        Piece(Cell cell, Color color, bool hasMoved = false, int sizePx = 50);
+
+        virtual std::vector<Move> getMoves(const Board& board) const = 0;
+        Cell getCell() const { return {row, column}; };
+        void setCell(Cell cell);
+        const Color getColor() const { return color; }
+
+    protected:
+        void loadTexture(Type type);
+        int row, column;
+        const Color color;
+        bool hasMoved;
+
+    private:
+        sf::Texture texture;
+        sf::VertexArray vertices;
+        const int sizePx;
+
+        virtual void draw(sf::RenderTarget& target,
+                          sf::RenderStates states) const {
+            // apply the entity's transform -- combine it with the one that was
+            // passed by the caller
+            states.transform *= getTransform();
+
+            // apply the tileset texture
+            states.texture = &texture;
+
+            // draw the vertex array
+            target.draw(vertices, states);
+        }
+    };
+
     enum class Tile { Light, Dark, Highlight };
 
-    explicit Board(const int size = 400);
+    explicit Board(const int sizePx = 400);
     const sf::FloatRect getBounds() const { return baseTiles.getBounds(); }
-    void onMouseEvent(const sf::Event& event);
+    void onClick(const sf::Event& event);
+    const std::shared_ptr<Piece>& getPiece(Cell cell) const;
+    const std::shared_ptr<Piece>& getCapturableEnPassant() const {
+        return capturableEnPassant;
+    }
 
 private:
     // Lenght of a side of the board, in pixels.
     // It's a square, so I only need a single value
-    const int size;
-    static const int CELL_IN_ROW = 8;
+    const int sizePx;
+
     std::shared_ptr<Piece> selectedPiece = nullptr;
     std::shared_ptr<Piece> capturableEnPassant = nullptr;
+    std::vector<std::shared_ptr<Piece>> pieces{8 * 8};
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;
-    sf::Texture texture_;
-    std::vector<std::shared_ptr<Piece>> pieces =
-        std::vector<std::shared_ptr<Piece>>(CELL_IN_ROW * CELL_IN_ROW);
+    sf::Texture texture;
 
-    const std::shared_ptr<Piece>& getPiece(Cell cell) const;
     void capturePiece(Cell cell);
     void select(const std::shared_ptr<Piece>& p);
     void unselect();
@@ -47,12 +86,13 @@ private:
         states.transform *= getTransform();
 
         // apply the tileset texture
-        states.texture = &texture_;
+        states.texture = &texture;
 
         // draw the vertex array
         target.draw(baseTiles, states);
         target.draw(highlightTiles, states);
 
+        // draw the pieces
         for (auto& p : pieces) {
             if (p) target.draw(*p, states);
         }
