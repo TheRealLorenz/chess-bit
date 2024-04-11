@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "Board.hpp"
+#include "ResourceManager.hpp"
 #include "debug.hpp"
 #include "pieces/Bishop.hpp"
 #include "pieces/King.hpp"
@@ -31,7 +32,7 @@ Board::Board(const int sizePx) : sizePx(sizePx) {
     checkTiles.setPrimitiveType(sf::Triangles);
     // Each cell is composed of two triangles
     // hence 3 vertices for triangle
-    texture.loadFromFile("assets/tiles.png");
+    texture = ResourceManager::get().texture("tiles.png");
     baseTiles.resize(8 * 8 * 6);
     const int cellSize = sizePx / 8;
 

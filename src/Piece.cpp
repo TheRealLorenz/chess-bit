@@ -2,6 +2,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "Board.hpp"
+#include "ResourceManager.hpp"
 
 Board::Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
     : color(color), sizePx(sizePx) {
@@ -27,7 +28,7 @@ void Board::Piece::loadTexture(Type type) {
     int width = 42;
     int height = 42;
 
-    texture.loadFromFile("assets/pieces.png");
+    texture = ResourceManager::get().texture("pieces.png");
 
     switch (type) {
         case Type::Pawn:
