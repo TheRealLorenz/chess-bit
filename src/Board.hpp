@@ -53,7 +53,7 @@ public:
         }
     };
 
-    enum class Tile { Light, Dark, Highlight };
+    enum class Tile { Light, Dark, Highlight, Check };
 
     explicit Board(const int sizePx = 400);
     const sf::FloatRect getBounds() const { return baseTiles.getBounds(); }
@@ -74,6 +74,7 @@ private:
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;
+    sf::VertexArray checkTiles;
     sf::Texture texture;
 
     void capturePiece(Cell cell);
@@ -83,6 +84,9 @@ private:
     void movePiece(const std::shared_ptr<Piece>& p, Cell cell);
     void populate(const int schema[64][2]);
     void setTile(sf::Vertex *vertices, Tile tile);
+    void checkForChecks();
+    bool isCellUnderAttack(Cell cell, Piece::Color by);
+    void setCheckCell(Cell cell);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
@@ -95,6 +99,7 @@ private:
         // draw the vertex array
         target.draw(baseTiles, states);
         target.draw(highlightTiles, states);
+        target.draw(checkTiles, states);
 
         // draw the pieces
         for (auto& p : pieces) {

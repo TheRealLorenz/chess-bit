@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <memory>
 
 #include "Board.hpp"
 #include "debug.hpp"
@@ -27,6 +28,7 @@ const int defaultSchema[64][2] = {
 Board::Board(const int sizePx) : sizePx(sizePx) {
     baseTiles.setPrimitiveType(sf::Triangles);
     highlightTiles.setPrimitiveType(sf::Triangles);
+    checkTiles.setPrimitiveType(sf::Triangles);
     // Each cell is composed of two triangles
     // hence 3 vertices for triangle
     texture.loadFromFile("assets/tiles.png");
@@ -114,6 +116,9 @@ void Board::setTile(sf::Vertex *vertices, Tile tile) {
         case Tile::Light:
             x += 2 * width;
             break;
+        case Tile::Check:
+            x += 3 * width;
+            break;
     }
 
     vertices[0].texCoords = sf::Vector2f(x, y);
@@ -160,6 +165,56 @@ void Board::highlightMoves() {
         }
         setTile(&highlightTiles[tile * 6], Tile::Highlight);
         tile++;
+    }
+}
+
+bool Board::isCellUnderAttack(Cell cell, Board::Piece::Color by) {
+    for (auto& p : pieces) {
+        if (!p) continue;
+
+        if (p->getColor() == by) {
+            for (auto& move : p->getMoves(*this)) {
+                if (move.cell == cell) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+void Board::setCheckCell(Cell cell) {
+    auto tile = &baseTiles[(cell.row * 8 + cell.column) * 6];
+
+    for (int i = 0; i < 6; i++) {
+        checkTiles.append(sf::Vertex(tile[i].position));
+    }
+    setTile(&checkTiles[0], Tile::Check);
+}
+
+void Board::checkForChecks() {
+    std::shared_ptr<Piece> whiteKing = nullptr;
+    std::shared_ptr<Piece> blackKing = nullptr;
+
+    for (auto& p : pieces) {
+        if (p && std::dynamic_pointer_cast<King>(p)) {
+            if (p->getColor() == Board::Piece::Color::White) {
+                whiteKing = p;
+            } else {
+                blackKing = p;
+            }
+        }
+    }
+
+    checkTiles.clear();
+    if (isCellUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
+        DEBUG("[DEBUG] Black King is under attack" << std::endl);
+        setCheckCell(blackKing->getCell());
+    } else if (isCellUnderAttack(whiteKing->getCell(),
+                                 Board::Piece::Color::Black)) {
+        DEBUG("[DEBUG] White King is under attack" << std::endl);
+        setCheckCell(whiteKing->getCell());
     }
 }
 
@@ -239,6 +294,7 @@ void Board::onClick(const sf::Event& event) {
             }
             movePiece(selectedPiece, move.cell);
             unselect();
+            checkForChecks();
             return;
         }
     }
