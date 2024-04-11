@@ -62,6 +62,7 @@ public:
     const std::shared_ptr<Piece>& getCapturableEnPassant() const {
         return capturableEnPassant;
     }
+    bool isUnderAttack(Cell cell, Piece::Color by) const;
 
 private:
     // Lenght of a side of the board, in pixels.
@@ -85,7 +86,6 @@ private:
     void populate(const int schema[64][2]);
     void setTile(sf::Vertex *vertices, Tile tile);
     void checkForChecks();
-    bool isCellUnderAttack(Cell cell, Piece::Color by);
     void setCheckCell(Cell cell);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {

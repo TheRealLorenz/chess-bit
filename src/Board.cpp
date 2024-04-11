@@ -168,7 +168,7 @@ void Board::highlightMoves() {
     }
 }
 
-bool Board::isCellUnderAttack(Cell cell, Board::Piece::Color by) {
+bool Board::isUnderAttack(Cell cell, Board::Piece::Color by) const {
     for (auto& p : pieces) {
         if (!p) continue;
 
@@ -208,11 +208,11 @@ void Board::checkForChecks() {
     }
 
     checkTiles.clear();
-    if (isCellUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
+    if (isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
         DEBUG("[DEBUG] Black King is under attack" << std::endl);
         setCheckCell(blackKing->getCell());
-    } else if (isCellUnderAttack(whiteKing->getCell(),
-                                 Board::Piece::Color::Black)) {
+    } else if (isUnderAttack(whiteKing->getCell(),
+                             Board::Piece::Color::Black)) {
         DEBUG("[DEBUG] White King is under attack" << std::endl);
         setCheckCell(whiteKing->getCell());
     }
