@@ -10,12 +10,16 @@
 
 class ResourceManager {
 public:
+    ResourceManager& operator=(const ResourceManager&) = delete;
+    ResourceManager(const ResourceManager&) = delete;
+
     static void setPrefix(std::string prefix);
     static ResourceManager& get();
 
     const sf::Texture& texture(std::string path);
 
 private:
+    ResourceManager() {}
     static ResourceManager *instance;
     static std::string prefix;
 #ifdef THREADSAFE_MANAGER
