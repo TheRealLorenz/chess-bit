@@ -23,12 +23,14 @@ public:
         Cell getCell() const { return {row, column}; };
         void setCell(Cell cell);
         const Color getColor() const { return color; }
+        bool hasMoved() const { return moved; }
+        void setMoved(bool moved) { Piece::moved = moved; }
 
     protected:
         void loadTexture(Type type);
         int row, column;
         const Color color;
-        bool hasMoved;
+        bool moved;
 
     private:
         sf::Texture texture;

@@ -18,7 +18,7 @@ Board::Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
         sf::Vector2f(sizePx * scaleFactor, sizePx * scaleFactor);
 
     setCell(cell);
-    this->hasMoved = hasMoved;
+    Piece::moved = hasMoved;
 }
 
 void Board::Piece::loadTexture(Type type) {
@@ -65,7 +65,7 @@ void Board::Piece::loadTexture(Type type) {
 void Board::Piece::setCell(Cell cell) {
     row = cell.row;
     column = cell.column;
-    hasMoved = true;
+    moved = true;
     const float delta = sizePx * (1 - scaleFactor) / 2;
 
     setPosition(sf::Vector2f(column * sizePx + delta, row * sizePx + delta));

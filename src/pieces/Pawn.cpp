@@ -16,7 +16,7 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
                   board.getPiece({row - 1, column})->getColor() == color)) {
                 moves.push_back(Move({row - 1, column}));
             }
-            if (column > 1 && !hasMoved &&
+            if (column > 1 && !moved &&
                 !(board.getPiece({row - 2, column}) &&
                   board.getPiece({row - 2, column})->getColor() == color)) {
                 moves.push_back(
@@ -58,7 +58,7 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
             if (column < 7) {
                 moves.push_back(Move({row + 1, column}));
             }
-            if (column < 6 && !hasMoved) {
+            if (column < 6 && !moved) {
                 moves.push_back(
                     Move({row + 2, column}, Move::Type::DoublePawn));
             }
