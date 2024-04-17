@@ -94,8 +94,17 @@ void Board::populate(const int schema[64][2]) {
                         std::shared_ptr<Piece>(new Queen({row, column}, color));
                     break;
                 case Piece::Type::King:
-                    pieces[row * 8 + column] =
+                    auto king =
                         std::shared_ptr<Piece>(new King({row, column}, color));
+                    switch (color) {
+                        case Piece::Color::White:
+                            whiteKing = king;
+                            break;
+                        case Piece::Color::Black:
+                            blackKing = king;
+                            break;
+                    }
+                    pieces[row * 8 + column] = king;
                     break;
             }
         }
@@ -195,19 +204,6 @@ void Board::setCheckCell(Cell cell) {
 }
 
 void Board::checkForChecks() {
-    std::shared_ptr<Piece> whiteKing = nullptr;
-    std::shared_ptr<Piece> blackKing = nullptr;
-
-    for (auto& p : pieces) {
-        if (p && std::dynamic_pointer_cast<King>(p)) {
-            if (p->getColor() == Board::Piece::Color::White) {
-                whiteKing = p;
-            } else {
-                blackKing = p;
-            }
-        }
-    }
-
     checkTiles.clear();
     if (isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
         DEBUG("[DEBUG] Black King is under attack" << std::endl);

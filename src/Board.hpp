@@ -71,6 +71,8 @@ private:
 
     std::shared_ptr<Piece> selectedPiece = nullptr;
     std::shared_ptr<Piece> capturableEnPassant = nullptr;
+    std::shared_ptr<Piece> whiteKing = nullptr;
+    std::shared_ptr<Piece> blackKing = nullptr;
     std::vector<std::shared_ptr<Piece>> pieces{8 * 8};
 
     sf::VertexArray baseTiles;
