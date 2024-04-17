@@ -286,20 +286,7 @@ void Board::onClick(const sf::Event& event) {
 
     if (!selectedPiece) return;
 
-    if (clickedPiece && selectedPiece->getColor() == clickedPiece->getColor()) {
-        if (selectedPiece == clickedPiece) {
-            unselect();
-            return;
-        }
-        DEBUG("[DEBUG] Selecting another piece with the same color"
-              << std::endl);
-        select(clickedPiece);
-        return;
-    }
-
-    auto moves = selectedPiece->getMoves(*this);
-
-    for (auto& move : moves) {
+    for (auto& move : selectedPiece->getMoves(*this)) {
         if (move.cell == Cell{row, column} && isMoveValid(move)) {
             auto& otherPiece = getPiece(move.cell);
             DEBUG("[DEBUG] Moving to cell" << std::endl);
@@ -321,12 +308,31 @@ void Board::onClick(const sf::Event& event) {
                 case Move::Type::Regualar:
                     capturableEnPassant = nullptr;
                     break;
+                case Move::Type::ShortCastling:
+                    movePiece(getPiece({selectedPiece->getCell().row, 7}),
+                              {selectedPiece->getCell().row, 5});
+                    break;
+                case Move::Type::LongCastling:
+                    movePiece(getPiece({selectedPiece->getCell().row, 0}),
+                              {selectedPiece->getCell().row, 3});
+                    break;
             }
             movePiece(selectedPiece, move.cell);
             unselect();
             checkForChecks();
             return;
         }
+    }
+
+    if (clickedPiece && selectedPiece->getColor() == clickedPiece->getColor()) {
+        if (selectedPiece == clickedPiece) {
+            unselect();
+            return;
+        }
+        DEBUG("[DEBUG] Selecting another piece with the same color"
+              << std::endl);
+        select(clickedPiece);
+        return;
     }
 
     DEBUG("[DEBUG] Invalid move, unselecting" << std::endl);
