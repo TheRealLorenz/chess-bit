@@ -168,6 +168,8 @@ void Board::highlightMoves() {
 
     int tile = 1;
     for (auto& move : moves) {
+        if (!isMoveValid(move)) continue;
+
         auto vertices = &baseTiles[(move.cell.column + move.cell.row * 8) * 6];
 
         for (int i = 0; i < 6; i++) {
@@ -234,6 +236,37 @@ void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
         std::move(pieces[oldCell.row * 8 + oldCell.column]);
 }
 
+bool Board::isMoveValid(Move move) const {
+    Board testBoard = Board(*this);
+    Cell oldCell = selectedPiece->getCell();
+    bool hasMoved = selectedPiece->hasMoved();
+
+    // Using a shallow copy of the Baord to check for
+    // checks.
+    // The copy constructor performs a copy of the
+    // shared pointers, so it shouldn't be costly, but
+    // we need to be careful cause it can still edit the
+    // original pieces.
+    testBoard.movePiece(testBoard.selectedPiece, move.cell);
+    bool isValid = false;
+
+    switch (selectedPiece->getColor()) {
+        case Piece::Color::Black:
+            isValid = !testBoard.isUnderAttack(testBoard.blackKing->getCell(),
+                                               Piece::Color::White);
+            break;
+        case Piece::Color::White:
+            isValid = !testBoard.isUnderAttack(testBoard.whiteKing->getCell(),
+                                               Piece::Color::Black);
+            break;
+    }
+
+    // Reset selectedPiece
+    selectedPiece->setCell(oldCell);
+    selectedPiece->setMoved(hasMoved);
+    return isValid;
+}
+
 void Board::onClick(const sf::Event& event) {
     const auto boardPosition = getPosition();
     const int cell_size = sizePx / 8;
@@ -267,7 +300,7 @@ void Board::onClick(const sf::Event& event) {
     auto moves = selectedPiece->getMoves(*this);
 
     for (auto& move : moves) {
-        if (move.cell == Cell{row, column}) {
+        if (move.cell == Cell{row, column} && isMoveValid(move)) {
             auto& otherPiece = getPiece(move.cell);
             DEBUG("[DEBUG] Moving to cell" << std::endl);
             if (otherPiece) {

@@ -91,6 +91,7 @@ private:
     void setTile(sf::Vertex *vertices, Tile tile);
     void checkForChecks();
     void setCheckCell(Cell cell);
+    bool isMoveValid(Move move) const;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
