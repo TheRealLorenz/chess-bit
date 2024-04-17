@@ -65,6 +65,7 @@ public:
         return capturableEnPassant;
     }
     bool isUnderAttack(Cell cell, Piece::Color by) const;
+    void capturePiece(Cell cell);
 
 private:
     // Lenght of a side of the board, in pixels.
@@ -82,7 +83,6 @@ private:
     sf::VertexArray checkTiles;
     sf::Texture texture;
 
-    void capturePiece(Cell cell);
     void select(const std::shared_ptr<Piece>& p);
     void unselect();
     void highlightMoves();
