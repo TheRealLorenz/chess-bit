@@ -1,6 +1,6 @@
-#include <algorithm>
-
 #include "King.hpp"
+
+#include <algorithm>
 
 King::King(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {

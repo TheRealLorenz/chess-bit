@@ -1,8 +1,7 @@
-#include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/System/Vector2.hpp>
-
 #include "Board.hpp"
 #include "ResourceManager.hpp"
+#include "SFML/Graphics/PrimitiveType.hpp"
+#include "SFML/System/Vector2.hpp"
 
 Board::Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
     : color(color), sizePx(sizePx) {

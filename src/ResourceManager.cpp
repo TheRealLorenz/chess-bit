@@ -1,4 +1,5 @@
 #include "ResourceManager.hpp"
+
 #include "SFML/Graphics/Texture.hpp"
 
 ResourceManager *ResourceManager::instance = nullptr;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <memory>
 
 #include "Board.hpp"
+#include "SFML/Graphics/RenderWindow.hpp"
 
 class Game {
 private:

@@ -1,10 +1,11 @@
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Mouse.hpp>
-#include <SFML/Window/WindowStyle.hpp>
+#include "Game.hpp"
+
 #include <memory>
 
-#include "Game.hpp"
+#include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Window/Event.hpp"
+#include "SFML/Window/Mouse.hpp"
+#include "SFML/Window/WindowStyle.hpp"
 #include "debug.hpp"
 
 Game::Game() : board(Board(400)) {

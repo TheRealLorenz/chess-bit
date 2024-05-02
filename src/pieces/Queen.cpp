@@ -1,6 +1,6 @@
-#include <iterator>
-
 #include "Queen.hpp"
+
+#include <iterator>
 
 Queen::Queen(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx),

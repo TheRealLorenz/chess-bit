@@ -1,6 +1,6 @@
-#include <algorithm>
-
 #include "Bishop.hpp"
+
+#include <algorithm>
 
 Bishop::Bishop(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {

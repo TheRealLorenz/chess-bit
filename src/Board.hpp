@@ -1,14 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Graphics/VertexArray.hpp>
-#include <SFML/Window/Event.hpp>
 #include <memory>
 
 #include "Move.hpp"
+#include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/RenderTarget.hpp"
+#include "SFML/Graphics/Texture.hpp"
+#include "SFML/Graphics/Transformable.hpp"
+#include "SFML/Graphics/VertexArray.hpp"
+#include "SFML/Window/Event.hpp"
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:

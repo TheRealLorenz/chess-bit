@@ -1,12 +1,12 @@
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/Graphics/Vertex.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
+#include "Board.hpp"
+
 #include <memory>
 
-#include "Board.hpp"
 #include "ResourceManager.hpp"
+#include "SFML/Graphics/PrimitiveType.hpp"
+#include "SFML/Graphics/Vertex.hpp"
+#include "SFML/System/Vector2.hpp"
+#include "SFML/Window/Event.hpp"
 #include "debug.hpp"
 #include "pieces/Bishop.hpp"
 #include "pieces/King.hpp"
