@@ -17,7 +17,7 @@ ResourceManager& ResourceManager::get() {
     return *instance;
 }
 
-void ResourceManager::setPrefix(std::string prefix) {
+void ResourceManager::setPrefix(const std::string& prefix) {
     ResourceManager::prefix = prefix;
 }
 

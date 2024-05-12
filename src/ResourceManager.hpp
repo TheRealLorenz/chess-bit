@@ -14,7 +14,7 @@ public:
     ResourceManager& operator=(const ResourceManager&) = delete;
     ResourceManager(const ResourceManager&) = delete;
 
-    static void setPrefix(std::string prefix);
+    static void setPrefix(const std::string& prefix);
     static ResourceManager& get();
 
     const sf::Texture& texture(std::string path);

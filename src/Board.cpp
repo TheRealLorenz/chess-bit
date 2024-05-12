@@ -1,5 +1,6 @@
 #include "Board.hpp"
 
+#include <algorithm>
 #include <memory>
 
 #include "ResourceManager.hpp"
@@ -170,7 +171,7 @@ void Board::highlightMoves() {
     for (auto& move : moves) {
         if (!isMoveValid(move)) continue;
 
-        auto vertices = &baseTiles[(move.cell.column + move.cell.row * 8) * 6];
+        vertices = &baseTiles[(move.cell.column + move.cell.row * 8) * 6];
 
         for (int i = 0; i < 6; i++) {
             highlightTiles.append(sf::Vertex(vertices[i].position));
@@ -182,14 +183,13 @@ void Board::highlightMoves() {
 
 bool Board::isUnderAttack(Cell cell, Board::Piece::Color by) const {
     for (auto& p : pieces) {
-        if (!p) continue;
+        if (!p || p->getColor() != by) continue;
 
-        if (p->getColor() == by) {
-            for (auto& move : p->getMoves(*this)) {
-                if (move.cell == cell) {
-                    return true;
-                }
-            }
+        auto moves = p->getMoves(*this);
+        if (std::any_of(moves.begin(), moves.end(), [cell](const auto& move) {
+                return move.cell == cell;
+            })) {
+            return true;
         }
     }
 
@@ -286,7 +286,7 @@ void Board::onClick(const sf::Event& event) {
 
     if (!selectedPiece) return;
 
-    for (auto& move : selectedPiece->getMoves(*this)) {
+    for (const auto& move : selectedPiece->getMoves(*this)) {
         if (move.cell == Cell{row, column} && isMoveValid(move)) {
             auto& otherPiece = getPiece(move.cell);
             DEBUG("[DEBUG] Moving to cell" << std::endl);

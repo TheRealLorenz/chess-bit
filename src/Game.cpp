@@ -8,9 +8,10 @@
 #include "SFML/Window/WindowStyle.hpp"
 #include "debug.hpp"
 
-Game::Game() : board(Board(400)) {
-    window = std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow{
-        {400u, 400u}, "Chess Bit", sf::Style::Titlebar | sf::Style::Close});
+Game::Game()
+    : board(Board(400)),
+      window(std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow{
+          {400u, 400u}, "Chess Bit", sf::Style::Titlebar | sf::Style::Close})) {
     window->setFramerateLimit(60);
 }
 
