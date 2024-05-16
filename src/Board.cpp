@@ -207,10 +207,12 @@ void Board::setCheckCell(Cell cell) {
 
 void Board::checkForChecks() {
     checkTiles.clear();
-    if (isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
+    if (turn == Piece::Color::Black &&
+        isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
         DEBUG("[DEBUG] Black King is under attack" << std::endl);
         setCheckCell(blackKing->getCell());
-    } else if (isUnderAttack(whiteKing->getCell(),
+    } else if (turn == Piece::Color::White &&
+               isUnderAttack(whiteKing->getCell(),
                              Board::Piece::Color::Black)) {
         DEBUG("[DEBUG] White King is under attack" << std::endl);
         setCheckCell(whiteKing->getCell());
@@ -267,6 +269,11 @@ bool Board::isMoveValid(Move move) const {
     return isValid;
 }
 
+void Board::advanceTurn() {
+    turn =
+        turn == Piece::Color::White ? Piece::Color::Black : Piece::Color::White;
+}
+
 void Board::onClick(const sf::Event& event) {
     const auto boardPosition = getPosition();
     const int cell_size = sizePx / 8;
@@ -278,7 +285,7 @@ void Board::onClick(const sf::Event& event) {
     DEBUG("[DEBUG] Clicked " << (clickedPiece ? "full" : "empty") << " cell ("
                              << column << ", " << row << ")" << std::endl);
 
-    if (!selectedPiece && clickedPiece) {
+    if (!selectedPiece && clickedPiece && clickedPiece->getColor() == turn) {
         DEBUG("[DEBUG] Selecting clicked piece" << std::endl);
         select(clickedPiece);
         return;
@@ -320,6 +327,7 @@ void Board::onClick(const sf::Event& event) {
             movePiece(selectedPiece, move.cell);
             unselect();
             checkForChecks();
+            advanceTurn();
             return;
         }
     }

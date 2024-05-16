@@ -71,6 +71,7 @@ private:
     // Lenght of a side of the board, in pixels.
     // It's a square, so I only need a single value
     const int sizePx;
+    Piece::Color turn = Piece::Color::White;
 
     std::shared_ptr<Piece> selectedPiece = nullptr;
     std::shared_ptr<Piece> capturableEnPassant = nullptr;
@@ -92,6 +93,7 @@ private:
     void checkForChecks();
     void setCheckCell(Cell cell);
     bool isMoveValid(Move move) const;
+    void advanceTurn();
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
         // apply the entity's transform -- combine it with the one that was
