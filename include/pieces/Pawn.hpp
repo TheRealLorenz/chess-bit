@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Board.hpp"
+#include "Board.hpp"
 
 class Pawn : public Board::Piece {
 public:

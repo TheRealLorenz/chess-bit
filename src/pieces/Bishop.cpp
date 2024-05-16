@@ -1,4 +1,4 @@
-#include "Bishop.hpp"
+#include "pieces/Bishop.hpp"
 
 #include <algorithm>
 

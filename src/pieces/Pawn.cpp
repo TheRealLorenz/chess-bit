@@ -1,4 +1,4 @@
-#include "Pawn.hpp"
+#include "pieces/Pawn.hpp"
 
 Pawn::Pawn(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {

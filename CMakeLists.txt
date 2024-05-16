@@ -10,18 +10,19 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+include_directories(include)
+
 add_executable(chess-bit
-    src/main.cpp src/debug.hpp
-    src/Game.hpp src/Game.cpp
-    src/ResourceManager.hpp src/ResourceManager.cpp
-    src/Board.hpp src/Board.cpp src/Piece.cpp
-    src/Cell.hpp src/Move.hpp
-    src/pieces/Pawn.hpp src/pieces/Pawn.cpp
-    src/pieces/Tower.hpp src/pieces/Tower.cpp
-    src/pieces/Knight.hpp src/pieces/Knight.cpp
-    src/pieces/Bishop.hpp src/pieces/Bishop.cpp
-    src/pieces/Queen.hpp src/pieces/Queen.cpp
-    src/pieces/King.hpp src/pieces/King.cpp
+    src/main.cpp
+    src/Game.cpp
+    src/ResourceManager.cpp
+    src/Board.cpp src/Piece.cpp
+    src/pieces/Pawn.cpp
+    src/pieces/Tower.cpp
+    src/pieces/Knight.cpp
+    src/pieces/Bishop.cpp
+    src/pieces/Queen.cpp
+    src/pieces/King.cpp
 )
 target_link_libraries(chess-bit PRIVATE sfml-graphics)
 target_compile_features(chess-bit PRIVATE cxx_std_17)

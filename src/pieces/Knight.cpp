@@ -1,4 +1,4 @@
-#include "Knight.hpp"
+#include "pieces/Knight.hpp"
 
 Knight::Knight(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {

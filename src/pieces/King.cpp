@@ -1,4 +1,4 @@
-#include "King.hpp"
+#include "pieces/King.hpp"
 
 #include <algorithm>
 

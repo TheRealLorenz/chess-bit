@@ -1,4 +1,4 @@
-#include "Queen.hpp"
+#include "pieces/Queen.hpp"
 
 #include <iterator>
 
