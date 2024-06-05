@@ -75,24 +75,29 @@ void Board::populate(const int schema[64][2]) {
 
             switch (type) {
                 case Piece::Type::Pawn:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Pawn({row, column}, color));
+                    pieces.set(
+                        row, column,
+                        std::shared_ptr<Piece>(new Pawn({row, column}, color)));
                     break;
                 case Piece::Type::Tower:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Tower({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Tower({row, column}, color)));
                     break;
                 case Piece::Type::Knight:
-                    pieces[row * 8 + column] = std::shared_ptr<Piece>(
-                        new Knight({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Knight({row, column}, color)));
                     break;
                 case Piece::Type::Bishop:
-                    pieces[row * 8 + column] = std::shared_ptr<Piece>(
-                        new Bishop({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Bishop({row, column}, color)));
                     break;
                 case Piece::Type::Queen:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Queen({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Queen({row, column}, color)));
                     break;
                 case Piece::Type::King:
                     auto king =
@@ -105,7 +110,7 @@ void Board::populate(const int schema[64][2]) {
                             blackKing = king;
                             break;
                     }
-                    pieces[row * 8 + column] = king;
+                    pieces.set(row, column, king);
                     break;
             }
         }
@@ -141,11 +146,11 @@ void Board::setTile(sf::Vertex *vertices, Tile tile) {
 }
 
 const std::shared_ptr<Board::Piece>& Board::getPiece(Cell cell) const {
-    return pieces[cell.row * 8 + cell.column];
+    return pieces.get(cell.row, cell.column);
 }
 
 void Board::capturePiece(Cell cell) {
-    pieces[cell.row * 8 + cell.column] = nullptr;
+    pieces.set(cell.row, cell.column, nullptr);
     if (selectedPiece && selectedPiece->getCell() == cell) {
         selectedPiece = nullptr;
     }
@@ -234,8 +239,7 @@ void Board::unselect() {
 void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
     auto oldCell = p->getCell();
     p->setCell(cell);
-    pieces[cell.row * 8 + cell.column] =
-        std::move(pieces[oldCell.row * 8 + oldCell.column]);
+    pieces.swap(cell.row, cell.column, oldCell.row, oldCell.column);
 }
 
 bool Board::isMoveValid(Move move) const {
