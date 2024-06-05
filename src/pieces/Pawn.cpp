@@ -11,12 +11,12 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
 
     switch (color) {
         case Piece::Color::White: {
-            if (column > 0 &&
+            if (row > 0 &&
                 !(board.getPiece({row - 1, column}) &&
                   board.getPiece({row - 1, column})->getColor() == color)) {
                 moves.push_back(Move({row - 1, column}));
             }
-            if (column > 1 && !moved &&
+            if (row > 1 && !moved &&
                 !(board.getPiece({row - 2, column}) &&
                   board.getPiece({row - 2, column})->getColor() == color)) {
                 moves.push_back(
@@ -55,10 +55,10 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
             break;
         }
         case Piece::Color::Black: {
-            if (column < 7) {
+            if (row < 7) {
                 moves.push_back(Move({row + 1, column}));
             }
-            if (column < 6 && !moved) {
+            if (row < 6 && !moved) {
                 moves.push_back(
                     Move({row + 2, column}, Move::Type::DoublePawn));
             }
