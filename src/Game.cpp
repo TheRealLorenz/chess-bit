@@ -1,24 +1,22 @@
 #include "Game.hpp"
 
-#include <memory>
-
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/Event.hpp"
 #include "SFML/Window/Mouse.hpp"
-#include "SFML/Window/WindowStyle.hpp"
+#include "SFML/Window/VideoMode.hpp"
 #include "debug.hpp"
 
 Game::Game()
-    : board(Board(400)),
-      window(std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow{
-          {400u, 400u}, "Chess Bit", sf::Style::Titlebar | sf::Style::Close})) {
-    window->setFramerateLimit(60);
+    : board(Board(std::min(settings.width, settings.height))),
+      window(sf::RenderWindow({settings.width, settings.height},
+                              settings.windowTitle, settings.style)) {
+    window.setFramerateLimit(60);
 }
 
 void Game::on_event(const sf::Event& event) {
     switch (event.type) {
         case sf::Event::Closed: {
-            window->close();
+            window.close();
             break;
         }
         case sf::Event::MouseButtonPressed: {
@@ -34,23 +32,23 @@ void Game::on_event(const sf::Event& event) {
             break;
         }
         default: {
-            DEBUG("[TRACE] Unhandled event type: " << event.type << std::endl);
+            if (event.type != sf::Event::EventType::MouseMoved)
+                DEBUG("[TRACE] Unhandled event type: " << event.type
+                                                       << std::endl);
             break;
         }
     }
 }
 
-void Game::render() const {
-    window->clear();
-
-    window->draw(board);
-
-    window->display();
+void Game::render() {
+    window.clear();
+    window.draw(board);
+    window.display();
 }
 
 int Game::run() {
-    while (window->isOpen()) {
-        for (auto event = sf::Event{}; window->pollEvent(event);) {
+    while (window.isOpen()) {
+        for (auto event = sf::Event{}; window.pollEvent(event);) {
             on_event(event);
         }
         render();
