@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Matrix.hpp"
 #include "Move.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
@@ -77,7 +78,7 @@ private:
     std::shared_ptr<Piece> capturableEnPassant = nullptr;
     std::shared_ptr<Piece> whiteKing = nullptr;
     std::shared_ptr<Piece> blackKing = nullptr;
-    std::vector<std::shared_ptr<Piece>> pieces{8 * 8};
+    Matrix<std::shared_ptr<Piece>, 8> pieces;
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;
