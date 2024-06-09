@@ -33,6 +33,7 @@ private:
     // It's a square, so I only need a single value
     const int sizePx;
     Color turn = Color::White;
+    static const int TILE_SIZE = 16;
 
     std::shared_ptr<Piece> selectedPiece = nullptr;
     std::shared_ptr<Piece> capturableEnPassant = nullptr;

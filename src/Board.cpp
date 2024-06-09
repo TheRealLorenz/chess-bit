@@ -139,29 +139,27 @@ void Board::populate(const int schema[64][2]) {
 void Board::setTile(sf::Vertex *vertices, Tile tile) {
     int x = 0;
     int y = 0;
-    int width = 64;
-    int height = 64;
 
     switch (tile) {
         case Tile::Highlight:
             break;
         case Tile::Dark:
-            x += width;
+            x += TILE_SIZE;
             break;
         case Tile::Light:
-            x += 2 * width;
+            x += 2 * TILE_SIZE;
             break;
         case Tile::Check:
-            x += 3 * width;
+            x += 3 * TILE_SIZE;
             break;
     }
 
     vertices[0].texCoords = sf::Vector2f(x, y);
-    vertices[1].texCoords = sf::Vector2f(x + width, y);
-    vertices[2].texCoords = sf::Vector2f(x, y + height);
-    vertices[3].texCoords = sf::Vector2f(x + width, y);
-    vertices[4].texCoords = sf::Vector2f(x, y + height);
-    vertices[5].texCoords = sf::Vector2f(x + width, y + height);
+    vertices[1].texCoords = sf::Vector2f(x + TILE_SIZE, y);
+    vertices[2].texCoords = sf::Vector2f(x, y + TILE_SIZE);
+    vertices[3].texCoords = sf::Vector2f(x + TILE_SIZE, y);
+    vertices[4].texCoords = sf::Vector2f(x, y + TILE_SIZE);
+    vertices[5].texCoords = sf::Vector2f(x + TILE_SIZE, y + TILE_SIZE);
 }
 
 const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
