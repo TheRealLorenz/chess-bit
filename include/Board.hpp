@@ -25,6 +25,7 @@ public:
     }
     bool isUnderAttack(Cell cell, Color by) const;
     void capturePiece(Cell cell);
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
     // Lenght of a side of the board, in pixels.
@@ -53,23 +54,4 @@ private:
     void setCheckCell(Cell cell);
     bool isMoveValid(Move move) const;
     void advanceTurn();
-
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const {
-        // apply the entity's transform -- combine it with the one that was
-        // passed by the caller
-        states.transform *= getTransform();
-
-        // apply the tileset texture
-        states.texture = &texture;
-
-        // draw the vertex array
-        target.draw(baseTiles, states);
-        target.draw(highlightTiles, states);
-        target.draw(checkTiles, states);
-
-        // draw the pieces
-        for (auto& p : pieces) {
-            if (p) target.draw(*p, states);
-        }
-    }
 };

@@ -65,6 +65,25 @@ Board::Board(const int sizePx) : sizePx(sizePx) {
     populate(defaultSchema);
 }
 
+void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    // apply the entity's transform -- combine it with the one that was
+    // passed by the caller
+    states.transform *= getTransform();
+
+    // apply the tileset texture
+    states.texture = &texture;
+
+    // draw the vertex array
+    target.draw(baseTiles, states);
+    target.draw(highlightTiles, states);
+    target.draw(checkTiles, states);
+
+    // draw the pieces
+    for (auto& p : pieces) {
+        if (p) target.draw(*p, states);
+    }
+}
+
 void Board::populate(const int schema[64][2]) {
     for (int row = 0; row < 8; row++) {
         for (int column = 0; column < 8; column++) {
