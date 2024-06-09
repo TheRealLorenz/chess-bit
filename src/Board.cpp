@@ -347,8 +347,8 @@ void Board::onClick(const sf::Event& event) {
             }
             movePiece(selectedPiece, move.cell);
             unselect();
-            checkForChecks();
             advanceTurn();
+            checkForChecks();
             return;
         }
     }
