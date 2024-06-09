@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Animatable.hpp"
 #include "Move.hpp"
 #include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
@@ -12,7 +13,7 @@
 
 class Board : public sf::Drawable, public sf::Transformable {
 public:
-    class Piece : public sf::Drawable, private sf::Transformable {
+    class Piece : public sf::Drawable, private Animatable {
     public:
         enum class Color { White = 0, Black };
         enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
@@ -21,10 +22,11 @@ public:
 
         virtual std::vector<Move> getMoves(const Board& board) const = 0;
         Cell getCell() const { return {row, column}; };
-        void setCell(Cell cell);
+        void setCell(Cell cell, int animationSpeed = 0);
         const Color getColor() const { return color; }
         bool hasMoved() const { return moved; }
         void setMoved(bool moved) { Piece::moved = moved; }
+        void update(int deltaMillis) { Animatable::update(deltaMillis); }
 
     protected:
         void loadTexture(Type type);
@@ -40,6 +42,7 @@ public:
         // A scaling factor of 1 makes the piece as big
         // as the cell itself.
         static constexpr float scaleFactor = 0.8;
+        const float delta = sizePx * (1 - scaleFactor) / 2;
 
         virtual void draw(sf::RenderTarget& target,
                           sf::RenderStates states) const {
@@ -66,6 +69,7 @@ public:
     }
     bool isUnderAttack(Cell cell, Piece::Color by) const;
     void capturePiece(Cell cell);
+    void update(int deltaMillis);
 
 private:
     // Lenght of a side of the board, in pixels.
@@ -87,7 +91,8 @@ private:
     void select(const std::shared_ptr<Piece>& p);
     void unselect();
     void highlightMoves();
-    void movePiece(const std::shared_ptr<Piece>& p, Cell cell);
+    void movePiece(const std::shared_ptr<Piece>& p, Cell cell,
+                   int animationSpeed = 0);
     void populate(const int schema[64][2]);
     void setTile(sf::Vertex *vertices, Tile tile);
     void checkForChecks();

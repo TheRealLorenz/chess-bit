@@ -65,6 +65,14 @@ Board::Board(const int sizePx) : sizePx(sizePx) {
     populate(defaultSchema);
 }
 
+void Board::update(int deltaMillis) {
+    for (auto& piece : pieces) {
+        if (piece) {
+            piece->update(deltaMillis);
+        }
+    }
+}
+
 void Board::populate(const int schema[64][2]) {
     for (int row = 0; row < 8; row++) {
         for (int column = 0; column < 8; column++) {
@@ -231,9 +239,10 @@ void Board::unselect() {
     highlightTiles.clear();
 }
 
-void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
+void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell,
+                      int animationSpeed) {
     auto oldCell = p->getCell();
-    p->setCell(cell);
+    p->setCell(cell, animationSpeed);
     pieces[cell.row * 8 + cell.column] =
         std::move(pieces[oldCell.row * 8 + oldCell.column]);
 }
@@ -317,14 +326,14 @@ void Board::onClick(const sf::Event& event) {
                     break;
                 case Move::Type::ShortCastling:
                     movePiece(getPiece({selectedPiece->getCell().row, 7}),
-                              {selectedPiece->getCell().row, 5});
+                              {selectedPiece->getCell().row, 5}, 200);
                     break;
                 case Move::Type::LongCastling:
                     movePiece(getPiece({selectedPiece->getCell().row, 0}),
-                              {selectedPiece->getCell().row, 3});
+                              {selectedPiece->getCell().row, 3}, 200);
                     break;
             }
-            movePiece(selectedPiece, move.cell);
+            movePiece(selectedPiece, move.cell, 200);
             unselect();
             checkForChecks();
             advanceTurn();

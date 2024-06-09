@@ -49,10 +49,14 @@ void Game::render() const {
 }
 
 int Game::run() {
+    sf::Clock deltaClock;
     while (window->isOpen()) {
+        sf::Time delta = deltaClock.restart();
+
         for (auto event = sf::Event{}; window->pollEvent(event);) {
             on_event(event);
         }
+        board.update(delta.asMilliseconds());
         render();
     }
 

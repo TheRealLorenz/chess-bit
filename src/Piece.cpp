@@ -61,11 +61,16 @@ void Board::Piece::loadTexture(Type type) {
     vertices[5].texCoords = sf::Vector2f(x + width, y + height);
 }
 
-void Board::Piece::setCell(Cell cell) {
+void Board::Piece::setCell(Cell cell, int animationSpeed) {
     row = cell.row;
     column = cell.column;
     moved = true;
-    const float delta = sizePx * (1 - scaleFactor) / 2;
 
-    setPosition(sf::Vector2f(column * sizePx + delta, row * sizePx + delta));
+    sf::Vector2f newPosition{column * sizePx + delta, row * sizePx + delta};
+
+    if (animationSpeed) {
+        setPositionAnimated(newPosition, animationSpeed);
+    } else {
+        setPosition(newPosition);
+    }
 }
