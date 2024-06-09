@@ -94,24 +94,29 @@ void Board::populate(const int schema[64][2]) {
 
             switch (type) {
                 case Piece::Type::Pawn:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Pawn({row, column}, color));
+                    pieces.set(
+                        row, column,
+                        std::shared_ptr<Piece>(new Pawn({row, column}, color)));
                     break;
                 case Piece::Type::Tower:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Tower({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Tower({row, column}, color)));
                     break;
                 case Piece::Type::Knight:
-                    pieces[row * 8 + column] = std::shared_ptr<Piece>(
-                        new Knight({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Knight({row, column}, color)));
                     break;
                 case Piece::Type::Bishop:
-                    pieces[row * 8 + column] = std::shared_ptr<Piece>(
-                        new Bishop({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Bishop({row, column}, color)));
                     break;
                 case Piece::Type::Queen:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Queen({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Queen({row, column}, color)));
                     break;
                 case Piece::Type::King:
                     auto king =
@@ -124,7 +129,7 @@ void Board::populate(const int schema[64][2]) {
                             blackKing = king;
                             break;
                     }
-                    pieces[row * 8 + column] = king;
+                    pieces.set(row, column, king);
                     break;
             }
         }
@@ -160,11 +165,11 @@ void Board::setTile(sf::Vertex *vertices, Tile tile) {
 }
 
 const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
-    return pieces[cell.row * 8 + cell.column];
+    return pieces.get(cell.row, cell.column);
 }
 
 void Board::capturePiece(Cell cell) {
-    pieces[cell.row * 8 + cell.column] = nullptr;
+    pieces.set(cell.row, cell.column, nullptr);
     if (selectedPiece && selectedPiece->getCell() == cell) {
         selectedPiece = nullptr;
     }
@@ -228,11 +233,11 @@ void Board::checkForChecks() {
     checkTiles.clear();
     if (turn == Color::Black &&
         isUnderAttack(blackKing->getCell(), Color::White)) {
-        DEBUG("[DEBUG] Black King is under attack" << std::endl);
+        DEBUG("[DEBUG] Black King is under attack");
         setCheckCell(blackKing->getCell());
     } else if (turn == Color::White &&
                isUnderAttack(whiteKing->getCell(), Color::Black)) {
-        DEBUG("[DEBUG] White King is under attack" << std::endl);
+        DEBUG("[DEBUG] White King is under attack");
         setCheckCell(whiteKing->getCell());
     }
 }
@@ -252,8 +257,7 @@ void Board::unselect() {
 void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
     auto oldCell = p->getCell();
     p->setCell(cell);
-    pieces[cell.row * 8 + cell.column] =
-        std::move(pieces[oldCell.row * 8 + oldCell.column]);
+    pieces.swap(cell.row, cell.column, oldCell.row, oldCell.column);
 }
 
 bool Board::isMoveValid(Move move) const {
@@ -299,11 +303,11 @@ void Board::onClick(const sf::Event& event) {
     const int row = (event.mouseButton.y - boardPosition.y) / cell_size;
     auto& clickedPiece = getPiece({row, column});
 
-    DEBUG("[DEBUG] Clicked " << (clickedPiece ? "full" : "empty") << " cell ("
-                             << column << ", " << row << ")" << std::endl);
+    DEBUG("[DEBUG] Clicked " + (clickedPiece ? "full" : "empty") + " cell (" +
+          S(column) + ", " + S(row) + ")");
 
     if (!selectedPiece && clickedPiece && clickedPiece->getColor() == turn) {
-        DEBUG("[DEBUG] Selecting clicked piece" << std::endl);
+        DEBUG("[DEBUG] Selecting clicked piece");
         select(clickedPiece);
         return;
     }
@@ -313,17 +317,16 @@ void Board::onClick(const sf::Event& event) {
     for (const auto& move : selectedPiece->getMoves(*this)) {
         if (move.cell == Cell{row, column} && isMoveValid(move)) {
             auto& otherPiece = getPiece(move.cell);
-            DEBUG("[DEBUG] Moving to cell" << std::endl);
+            DEBUG("[DEBUG] Moving to cell");
             if (otherPiece) {
-                DEBUG("[DEBUG] Eating enemy" << std::endl);
+                DEBUG("[DEBUG] Eating enemy");
             }
             switch (move.type) {
                 case Move::Type::Castle:
                     capturableEnPassant = nullptr;
                     break;
                 case Move::Type::DoublePawn:
-                    DEBUG("[DEBUG] Piece is vulnerable to en passant"
-                          << std::endl);
+                    DEBUG("[DEBUG] Piece is vulnerable to en passant");
                     capturableEnPassant = selectedPiece;
                     break;
                 case Move::Type::EnPassantCapture:
@@ -354,12 +357,11 @@ void Board::onClick(const sf::Event& event) {
             unselect();
             return;
         }
-        DEBUG("[DEBUG] Selecting another piece with the same color"
-              << std::endl);
+        DEBUG("[DEBUG] Selecting another piece with the same color");
         select(clickedPiece);
         return;
     }
 
-    DEBUG("[DEBUG] Invalid move, unselecting" << std::endl);
+    DEBUG("[DEBUG] Invalid move, unselecting");
     unselect();
 }

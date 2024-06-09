@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Color.hpp"
+#include "Matrix.hpp"
 #include "Move.hpp"
 #include "Piece.hpp"
 #include "SFML/Graphics/Rect.hpp"
@@ -37,7 +38,7 @@ private:
     std::shared_ptr<Piece> capturableEnPassant = nullptr;
     std::shared_ptr<Piece> whiteKing = nullptr;
     std::shared_ptr<Piece> blackKing = nullptr;
-    std::vector<std::shared_ptr<Piece>> pieces{8 * 8};
+    Matrix<std::shared_ptr<Piece>, 8> pieces;
 
     sf::VertexArray baseTiles;
     sf::VertexArray highlightTiles;

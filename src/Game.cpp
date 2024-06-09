@@ -27,14 +27,13 @@ void Game::on_event(const sf::Event& event) {
                 }
                 break;
             }
-            DEBUG("[TRACE] Unhandled mouse button: " << event.mouseButton.button
-                                                     << std::endl);
+            DEBUG("[TRACE] Unhandled mouse button: " +
+                  S(event.mouseButton.button));
             break;
         }
         default: {
             if (event.type != sf::Event::EventType::MouseMoved)
-                DEBUG("[TRACE] Unhandled event type: " << event.type
-                                                       << std::endl);
+                DEBUG("[TRACE] Unhandled event type: " + S(event.type));
             break;
         }
     }
