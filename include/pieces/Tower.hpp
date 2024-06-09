@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Board.hpp"
+#include "Piece.hpp"
 
-class Tower : public virtual Board::Piece {
+class Tower : public virtual Piece {
 public:
     Tower(Cell cell, Color color, bool hasMoved = false, const int sizePx = 50);
 

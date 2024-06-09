@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "Board.hpp"
+
 King::King(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {
     loadTexture(Type::King);
@@ -16,11 +18,11 @@ std::vector<Move> King::getMoves(const Board& board) const {
 
     Color otherColor;
     switch (color) {
-        case Board::Piece::Color::White:
-            otherColor = Board::Piece::Color::Black;
+        case Color::White:
+            otherColor = Color::Black;
             break;
-        case Board::Piece::Color::Black:
-            otherColor = Board::Piece::Color::White;
+        case Color::Black:
+            otherColor = Color::White;
             break;
     }
 

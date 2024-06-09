@@ -16,7 +16,9 @@ add_executable(chess-bit
     src/main.cpp
     src/Game.cpp
     src/ResourceManager.cpp
-    src/Board.cpp src/Piece.cpp
+    src/Board.cpp
+    src/Piece.cpp
+    src/Tile.cpp
     src/pieces/Pawn.cpp
     src/pieces/Tower.cpp
     src/pieces/Knight.cpp

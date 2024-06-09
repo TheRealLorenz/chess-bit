@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ResourceManager.hpp"
-#include "SFML/Graphics/PrimitiveType.hpp"
-#include "SFML/Graphics/Vertex.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Event.hpp"
 #include "debug.hpp"
@@ -28,37 +25,14 @@ const int defaultSchema[64][2] = {
 };
 
 Board::Board(const int sizePx) : sizePx(sizePx) {
-    baseTiles.setPrimitiveType(sf::Triangles);
-    highlightTiles.setPrimitiveType(sf::Triangles);
-    checkTiles.setPrimitiveType(sf::Triangles);
-    // Each cell is composed of two triangles
-    // hence 3 vertices for triangle
-    texture = ResourceManager::get().texture("tiles.png");
-    baseTiles.resize(8 * 8 * 6);
     const int cellSize = sizePx / 8;
 
     for (int row = 0; row < 8; row++) {
         for (int column = 0; column < 8; column++) {
-            auto vertices = &baseTiles[(row * 8 + column) * 6];
-
-            // Upper left triangle
-            vertices[0].position =
-                sf::Vector2f(column * cellSize, row * cellSize);
-            vertices[1].position =
-                sf::Vector2f((column + 1) * cellSize, row * cellSize);
-            vertices[2].position =
-                sf::Vector2f(column * cellSize, (row + 1) * cellSize);
-
-            // Bottom right triangle
-            vertices[3].position =
-                sf::Vector2f((column + 1) * cellSize, row * cellSize);
-            vertices[4].position =
-                sf::Vector2f(column * cellSize, (row + 1) * cellSize);
-            vertices[5].position =
-                sf::Vector2f((column + 1) * cellSize, (row + 1) * cellSize);
-
-            setTile(vertices,
-                    (column + row) % 2 == 0 ? Tile::Light : Tile::Dark);
+            baseTiles[row * 8 + column] = Tile(
+                sf::Vector2f(column * cellSize, row * cellSize),
+                sf::Vector2f(cellSize, cellSize),
+                (column + row) % 2 == 0 ? Tile::Type::Light : Tile::Type::Dark);
         }
     }
 
@@ -73,87 +47,93 @@ void Board::update(int deltaMillis) {
     }
 }
 
+const sf::FloatRect Board::getBounds() const {
+    const auto scale = getScale();
+    const auto position = getPosition();
+
+    return {position.x, position.y, sizePx * scale.x, sizePx * scale.y};
+}
+
+void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    // apply the entity's transform -- combine it with the one that was
+    // passed by the caller
+    states.transform *= getTransform();
+
+    // draw the tiles
+    for (const auto& tile : baseTiles) {
+        target.draw(tile, states);
+    }
+    for (const auto& tile : highlightTiles) {
+        target.draw(tile, states);
+    }
+    if (checkTile) {
+        target.draw(checkTile.value(), states);
+    }
+
+    // draw the pieces
+    for (auto& p : pieces) {
+        if (p) target.draw(*p, states);
+    }
+}
+
 void Board::populate(const int schema[64][2]) {
     for (int row = 0; row < 8; row++) {
         for (int column = 0; column < 8; column++) {
             if (schema[row * 8 + column][0] == -1) continue;
 
             auto type = Piece::Type(schema[row * 8 + column][0]);
-            auto color = Piece::Color(schema[row * 8 + column][1]);
+            auto color = Color(schema[row * 8 + column][1]);
 
             switch (type) {
                 case Piece::Type::Pawn:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Pawn({row, column}, color));
+                    pieces.set(
+                        row, column,
+                        std::shared_ptr<Piece>(new Pawn({row, column}, color)));
                     break;
                 case Piece::Type::Tower:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Tower({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Tower({row, column}, color)));
                     break;
                 case Piece::Type::Knight:
-                    pieces[row * 8 + column] = std::shared_ptr<Piece>(
-                        new Knight({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Knight({row, column}, color)));
                     break;
                 case Piece::Type::Bishop:
-                    pieces[row * 8 + column] = std::shared_ptr<Piece>(
-                        new Bishop({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Bishop({row, column}, color)));
                     break;
                 case Piece::Type::Queen:
-                    pieces[row * 8 + column] =
-                        std::shared_ptr<Piece>(new Queen({row, column}, color));
+                    pieces.set(row, column,
+                               std::shared_ptr<Piece>(
+                                   new Queen({row, column}, color)));
                     break;
                 case Piece::Type::King:
                     auto king =
                         std::shared_ptr<Piece>(new King({row, column}, color));
                     switch (color) {
-                        case Piece::Color::White:
+                        case Color::White:
                             whiteKing = king;
                             break;
-                        case Piece::Color::Black:
+                        case Color::Black:
                             blackKing = king;
                             break;
                     }
-                    pieces[row * 8 + column] = king;
+                    pieces.set(row, column, king);
                     break;
             }
         }
     }
 }
 
-void Board::setTile(sf::Vertex *vertices, Tile tile) {
-    int x = 0;
-    int y = 0;
-    int width = 64;
-    int height = 64;
-
-    switch (tile) {
-        case Tile::Highlight:
-            break;
-        case Tile::Dark:
-            x += width;
-            break;
-        case Tile::Light:
-            x += 2 * width;
-            break;
-        case Tile::Check:
-            x += 3 * width;
-            break;
-    }
-
-    vertices[0].texCoords = sf::Vector2f(x, y);
-    vertices[1].texCoords = sf::Vector2f(x + width, y);
-    vertices[2].texCoords = sf::Vector2f(x, y + height);
-    vertices[3].texCoords = sf::Vector2f(x + width, y);
-    vertices[4].texCoords = sf::Vector2f(x, y + height);
-    vertices[5].texCoords = sf::Vector2f(x + width, y + height);
-}
-
-const std::shared_ptr<Board::Piece>& Board::getPiece(Cell cell) const {
-    return pieces[cell.row * 8 + cell.column];
+const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
+    return pieces.get(cell.row, cell.column);
 }
 
 void Board::capturePiece(Cell cell) {
-    pieces[cell.row * 8 + cell.column] = nullptr;
+    pieces.set(cell.row, cell.column, nullptr);
     if (selectedPiece && selectedPiece->getCell() == cell) {
         selectedPiece = nullptr;
     }
@@ -166,30 +146,23 @@ void Board::highlightMoves() {
     if (!selectedPiece) return;
     highlightTiles.clear();
 
-    auto moves = selectedPiece->getMoves(*this);
     auto cell = selectedPiece->getCell();
-    auto vertices = &baseTiles[(cell.column + cell.row * 8) * 6];
+    const int cellSize = sizePx / 8;
 
-    for (int i = 0; i < 6; i++) {
-        highlightTiles.append(sf::Vertex(vertices[i].position));
-    }
-    setTile(&highlightTiles[0], Tile::Highlight);
+    highlightTiles.emplace_back(
+        sf::Vector2f(cell.column * cellSize, cell.row * cellSize),
+        sf::Vector2f(cellSize, cellSize), Tile::Type::Highlight);
 
-    int tile = 1;
-    for (auto& move : moves) {
+    for (auto& move : selectedPiece->getMoves(*this)) {
         if (!isMoveValid(move)) continue;
 
-        vertices = &baseTiles[(move.cell.column + move.cell.row * 8) * 6];
-
-        for (int i = 0; i < 6; i++) {
-            highlightTiles.append(sf::Vertex(vertices[i].position));
-        }
-        setTile(&highlightTiles[tile * 6], Tile::Highlight);
-        tile++;
+        highlightTiles.emplace_back(
+            sf::Vector2f(move.cell.column * cellSize, move.cell.row * cellSize),
+            sf::Vector2f(cellSize, cellSize), Tile::Type::Highlight);
     }
 }
 
-bool Board::isUnderAttack(Cell cell, Board::Piece::Color by) const {
+bool Board::isUnderAttack(Cell cell, Color by) const {
     for (auto& p : pieces) {
         if (!p || p->getColor() != by) continue;
 
@@ -205,24 +178,22 @@ bool Board::isUnderAttack(Cell cell, Board::Piece::Color by) const {
 }
 
 void Board::setCheckCell(Cell cell) {
-    auto tile = &baseTiles[(cell.row * 8 + cell.column) * 6];
+    const int cellSize = sizePx / 8;
 
-    for (int i = 0; i < 6; i++) {
-        checkTiles.append(sf::Vertex(tile[i].position));
-    }
-    setTile(&checkTiles[0], Tile::Check);
+    checkTile = Tile(sf::Vector2f(cell.column * cellSize, cell.row * cellSize),
+                     sf::Vector2f(cellSize, cellSize), Tile::Type::Check);
 }
 
 void Board::checkForChecks() {
-    checkTiles.clear();
-    if (turn == Piece::Color::Black &&
-        isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
-        DEBUG("[DEBUG] Black King is under attack" << std::endl);
+    checkTile = std::optional<Tile>();
+
+    if (turn == Color::Black &&
+        isUnderAttack(blackKing->getCell(), Color::White)) {
+        DEBUG("[DEBUG] Black King is under attack");
         setCheckCell(blackKing->getCell());
-    } else if (turn == Piece::Color::White &&
-               isUnderAttack(whiteKing->getCell(),
-                             Board::Piece::Color::Black)) {
-        DEBUG("[DEBUG] White King is under attack" << std::endl);
+    } else if (turn == Color::White &&
+               isUnderAttack(whiteKing->getCell(), Color::Black)) {
+        DEBUG("[DEBUG] White King is under attack");
         setCheckCell(whiteKing->getCell());
     }
 }
@@ -243,8 +214,8 @@ void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell,
                       int animationSpeed) {
     auto oldCell = p->getCell();
     p->setCell(cell, animationSpeed);
-    pieces[cell.row * 8 + cell.column] =
-        std::move(pieces[oldCell.row * 8 + oldCell.column]);
+    pieces.set(cell.row, cell.column, p);
+    pieces.set(oldCell.row, oldCell.column, nullptr);
 }
 
 bool Board::isMoveValid(Move move) const {
@@ -262,13 +233,13 @@ bool Board::isMoveValid(Move move) const {
     bool isValid = false;
 
     switch (selectedPiece->getColor()) {
-        case Piece::Color::Black:
+        case Color::Black:
             isValid = !testBoard.isUnderAttack(testBoard.blackKing->getCell(),
-                                               Piece::Color::White);
+                                               Color::White);
             break;
-        case Piece::Color::White:
+        case Color::White:
             isValid = !testBoard.isUnderAttack(testBoard.whiteKing->getCell(),
-                                               Piece::Color::Black);
+                                               Color::Black);
             break;
     }
 
@@ -279,8 +250,7 @@ bool Board::isMoveValid(Move move) const {
 }
 
 void Board::advanceTurn() {
-    turn =
-        turn == Piece::Color::White ? Piece::Color::Black : Piece::Color::White;
+    turn = turn == Color::White ? Color::Black : Color::White;
 }
 
 void Board::onClick(const sf::Event& event) {
@@ -291,11 +261,11 @@ void Board::onClick(const sf::Event& event) {
     const int row = (event.mouseButton.y - boardPosition.y) / cell_size;
     auto& clickedPiece = getPiece({row, column});
 
-    DEBUG("[DEBUG] Clicked " << (clickedPiece ? "full" : "empty") << " cell ("
-                             << column << ", " << row << ")" << std::endl);
+    DEBUG("[DEBUG] Clicked " + (clickedPiece ? "full" : "empty") + " cell (" +
+          S(column) + ", " + S(row) + ")");
 
     if (!selectedPiece && clickedPiece && clickedPiece->getColor() == turn) {
-        DEBUG("[DEBUG] Selecting clicked piece" << std::endl);
+        DEBUG("[DEBUG] Selecting clicked piece");
         select(clickedPiece);
         return;
     }
@@ -305,17 +275,16 @@ void Board::onClick(const sf::Event& event) {
     for (const auto& move : selectedPiece->getMoves(*this)) {
         if (move.cell == Cell{row, column} && isMoveValid(move)) {
             auto& otherPiece = getPiece(move.cell);
-            DEBUG("[DEBUG] Moving to cell" << std::endl);
+            DEBUG("[DEBUG] Moving to cell");
             if (otherPiece) {
-                DEBUG("[DEBUG] Eating enemy" << std::endl);
+                DEBUG("[DEBUG] Eating enemy");
             }
             switch (move.type) {
                 case Move::Type::Castle:
                     capturableEnPassant = nullptr;
                     break;
                 case Move::Type::DoublePawn:
-                    DEBUG("[DEBUG] Piece is vulnerable to en passant"
-                          << std::endl);
+                    DEBUG("[DEBUG] Piece is vulnerable to en passant");
                     capturableEnPassant = selectedPiece;
                     break;
                 case Move::Type::EnPassantCapture:
@@ -335,8 +304,8 @@ void Board::onClick(const sf::Event& event) {
             }
             movePiece(selectedPiece, move.cell, 200);
             unselect();
-            checkForChecks();
             advanceTurn();
+            checkForChecks();
             return;
         }
     }
@@ -346,12 +315,11 @@ void Board::onClick(const sf::Event& event) {
             unselect();
             return;
         }
-        DEBUG("[DEBUG] Selecting another piece with the same color"
-              << std::endl);
+        DEBUG("[DEBUG] Selecting another piece with the same color");
         select(clickedPiece);
         return;
     }
 
-    DEBUG("[DEBUG] Invalid move, unselecting" << std::endl);
+    DEBUG("[DEBUG] Invalid move, unselecting");
     unselect();
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Board.hpp"
+#include "Piece.hpp"
 
-class Bishop : public virtual Board::Piece {
+class Bishop : public virtual Piece {
 public:
     Bishop(Cell cell, Color color, bool hasMoved = false,
            const int sizePx = 50);

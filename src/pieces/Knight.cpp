@@ -1,5 +1,7 @@
 #include "pieces/Knight.hpp"
 
+#include "Board.hpp"
+
 Knight::Knight(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {
     loadTexture(Type::Knight);
