@@ -257,7 +257,8 @@ void Board::unselect() {
 void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
     auto oldCell = p->getCell();
     p->setCell(cell);
-    pieces.swap(cell.row, cell.column, oldCell.row, oldCell.column);
+    pieces.set(cell.row, cell.column, p);
+    pieces.set(oldCell.row, oldCell.column, nullptr);
 }
 
 bool Board::isMoveValid(Move move) const {
