@@ -1,5 +1,7 @@
 #include "pieces/Tower.hpp"
 
+#include "Board.hpp"
+
 Tower::Tower(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {
     loadTexture(Type::Tower);

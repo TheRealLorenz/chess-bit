@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Board.hpp"
+#include "Piece.hpp"
 
-class Pawn : public Board::Piece {
+class Pawn : public Piece {
 public:
     Pawn(Cell cell, Color color, bool hasMoved = false, const int sizePx = 50);
 

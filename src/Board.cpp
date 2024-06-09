@@ -71,7 +71,7 @@ void Board::populate(const int schema[64][2]) {
             if (schema[row * 8 + column][0] == -1) continue;
 
             auto type = Piece::Type(schema[row * 8 + column][0]);
-            auto color = Piece::Color(schema[row * 8 + column][1]);
+            auto color = Color(schema[row * 8 + column][1]);
 
             switch (type) {
                 case Piece::Type::Pawn:
@@ -98,10 +98,10 @@ void Board::populate(const int schema[64][2]) {
                     auto king =
                         std::shared_ptr<Piece>(new King({row, column}, color));
                     switch (color) {
-                        case Piece::Color::White:
+                        case Color::White:
                             whiteKing = king;
                             break;
-                        case Piece::Color::Black:
+                        case Color::Black:
                             blackKing = king;
                             break;
                     }
@@ -140,7 +140,7 @@ void Board::setTile(sf::Vertex *vertices, Tile tile) {
     vertices[5].texCoords = sf::Vector2f(x + width, y + height);
 }
 
-const std::shared_ptr<Board::Piece>& Board::getPiece(Cell cell) const {
+const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
     return pieces[cell.row * 8 + cell.column];
 }
 
@@ -181,7 +181,7 @@ void Board::highlightMoves() {
     }
 }
 
-bool Board::isUnderAttack(Cell cell, Board::Piece::Color by) const {
+bool Board::isUnderAttack(Cell cell, Color by) const {
     for (auto& p : pieces) {
         if (!p || p->getColor() != by) continue;
 
@@ -207,13 +207,12 @@ void Board::setCheckCell(Cell cell) {
 
 void Board::checkForChecks() {
     checkTiles.clear();
-    if (turn == Piece::Color::Black &&
-        isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
+    if (turn == Color::Black &&
+        isUnderAttack(blackKing->getCell(), Color::White)) {
         DEBUG("[DEBUG] Black King is under attack" << std::endl);
         setCheckCell(blackKing->getCell());
-    } else if (turn == Piece::Color::White &&
-               isUnderAttack(whiteKing->getCell(),
-                             Board::Piece::Color::Black)) {
+    } else if (turn == Color::White &&
+               isUnderAttack(whiteKing->getCell(), Color::Black)) {
         DEBUG("[DEBUG] White King is under attack" << std::endl);
         setCheckCell(whiteKing->getCell());
     }
@@ -253,13 +252,13 @@ bool Board::isMoveValid(Move move) const {
     bool isValid = false;
 
     switch (selectedPiece->getColor()) {
-        case Piece::Color::Black:
+        case Color::Black:
             isValid = !testBoard.isUnderAttack(testBoard.blackKing->getCell(),
-                                               Piece::Color::White);
+                                               Color::White);
             break;
-        case Piece::Color::White:
+        case Color::White:
             isValid = !testBoard.isUnderAttack(testBoard.whiteKing->getCell(),
-                                               Piece::Color::Black);
+                                               Color::Black);
             break;
     }
 
@@ -270,8 +269,7 @@ bool Board::isMoveValid(Move move) const {
 }
 
 void Board::advanceTurn() {
-    turn =
-        turn == Piece::Color::White ? Piece::Color::Black : Piece::Color::White;
+    turn = turn == Color::White ? Color::Black : Color::White;
 }
 
 void Board::onClick(const sf::Event& event) {

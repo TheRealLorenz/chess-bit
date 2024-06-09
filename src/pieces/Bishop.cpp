@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "Board.hpp"
+
 Bishop::Bishop(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {
     loadTexture(Type::Bishop);

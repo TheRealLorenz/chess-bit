@@ -1,5 +1,7 @@
 #include "pieces/Pawn.hpp"
 
+#include "Board.hpp"
+
 Pawn::Pawn(Cell cell, Color color, bool hasMoved, const int sizePx)
     : Piece(cell, color, hasMoved, sizePx) {
     loadTexture(Type::Pawn);
@@ -10,7 +12,7 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
     moves.reserve(4);
 
     switch (color) {
-        case Piece::Color::White: {
+        case Color::White: {
             if (row > 0 &&
                 !(board.getPiece({row - 1, column}) &&
                   board.getPiece({row - 1, column})->getColor() == color)) {
@@ -54,7 +56,7 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
             }
             break;
         }
-        case Piece::Color::Black: {
+        case Color::Black: {
             if (row < 7) {
                 moves.push_back(Move({row + 1, column}));
             }

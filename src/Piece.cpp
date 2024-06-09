@@ -3,7 +3,7 @@
 #include "SFML/Graphics/PrimitiveType.hpp"
 #include "SFML/System/Vector2.hpp"
 
-Board::Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
+Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
     : color(color), sizePx(sizePx) {
     vertices.setPrimitiveType(sf::Triangles);
     vertices.resize(6);
@@ -20,7 +20,7 @@ Board::Piece::Piece(Cell cell, Color color, bool hasMoved, int sizePx)
     Piece::moved = hasMoved;
 }
 
-void Board::Piece::loadTexture(Type type) {
+void Piece::loadTexture(Type type) {
     int x = 0;
     int y = 0;
     // Each tile is 42x42 px
@@ -61,7 +61,7 @@ void Board::Piece::loadTexture(Type type) {
     vertices[5].texCoords = sf::Vector2f(x + width, y + height);
 }
 
-void Board::Piece::setCell(Cell cell) {
+void Piece::setCell(Cell cell) {
     row = cell.row;
     column = cell.column;
     moved = true;

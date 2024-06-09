@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Board.hpp"
+#include "Piece.hpp"
 
-class Knight : public Board::Piece {
+class Knight : public Piece {
 public:
     Knight(Cell cell, Color color, bool hasMoved = false,
            const int sizePx = 50);
