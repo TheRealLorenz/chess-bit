@@ -1,33 +1,57 @@
 #include "Animatable.hpp"
 
+#include <cmath>
+#include <cstdlib>
+
+const sf::Transform& Animatable::getTransform() const {
+    return sf::Transformable::getTransform();
+}
+
+void Animatable::setPosition(const sf::Vector2f& position) {
+    targetPosition = position;
+    sf::Transformable::setPosition(position);
+}
+
 void Animatable::setPositionAnimated(const sf::Vector2f& position,
                                      int pxPerSecond) {
-    targetX = position.x;
-    targetY = position.y;
+    targetPosition = position;
     speedPerSecond = pxPerSecond;
 }
 
-void Animatable::update(int deltaMillis) {
+void Animatable::updatePosition(int deltaMillis) {
     auto position = getPosition();
-    if (position.x == targetX && position.y == targetY) {
+    if (position == targetPosition) {
         return;
     }
 
-    if (position.x < targetX) {
+    sf::Vector2f delta = targetPosition - position;
+    float modulo = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+    delta.x /= modulo;
+    delta.y /= modulo;
+
+    if (delta.x > 0) {
         position.x = std::min(
-            position.x + (float)speedPerSecond * deltaMillis / 1000, targetX);
-    } else if (position.x > targetX) {
+            position.x + (float)speedPerSecond * delta.x * deltaMillis / 1000,
+            targetPosition.x);
+    } else if (delta.x < 0) {
         position.x = std::max(
-            position.x - (float)speedPerSecond * deltaMillis / 1000, targetX);
+            position.x + (float)speedPerSecond * delta.x * deltaMillis / 1000,
+            targetPosition.x);
     }
 
-    if (position.y < targetY) {
+    if (delta.y > 0) {
         position.y = std::min(
-            position.y + (float)speedPerSecond * deltaMillis / 1000, targetY);
-    } else if (position.y > targetY) {
+            position.y + (float)speedPerSecond * delta.y * deltaMillis / 1000,
+            targetPosition.y);
+    } else if (delta.y < 0) {
         position.y = std::max(
-            position.y - (float)speedPerSecond * deltaMillis / 1000, targetY);
+            position.y + (float)speedPerSecond * delta.y * deltaMillis / 1000,
+            targetPosition.y);
     }
 
-    setPosition(position);
+    sf::Transformable::setPosition(position);
+}
+
+void Animatable::update(int deltaMillis) {
+    updatePosition(deltaMillis);
 }
