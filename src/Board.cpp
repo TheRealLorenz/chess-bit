@@ -209,12 +209,12 @@ void Board::checkForChecks() {
     checkTiles.clear();
     if (turn == Piece::Color::Black &&
         isUnderAttack(blackKing->getCell(), Board::Piece::Color::White)) {
-        DEBUG("[DEBUG] Black King is under attack" << std::endl);
+        DEBUG("[DEBUG] Black King is under attack");
         setCheckCell(blackKing->getCell());
     } else if (turn == Piece::Color::White &&
                isUnderAttack(whiteKing->getCell(),
                              Board::Piece::Color::Black)) {
-        DEBUG("[DEBUG] White King is under attack" << std::endl);
+        DEBUG("[DEBUG] White King is under attack");
         setCheckCell(whiteKing->getCell());
     }
 }
@@ -282,11 +282,11 @@ void Board::onClick(const sf::Event& event) {
     const int row = (event.mouseButton.y - boardPosition.y) / cell_size;
     auto& clickedPiece = getPiece({row, column});
 
-    DEBUG("[DEBUG] Clicked " << (clickedPiece ? "full" : "empty") << " cell ("
-                             << column << ", " << row << ")" << std::endl);
+    DEBUG("[DEBUG] Clicked " + (clickedPiece ? "full" : "empty") + " cell (" +
+          S(column) + ", " + S(row) + ")");
 
     if (!selectedPiece && clickedPiece && clickedPiece->getColor() == turn) {
-        DEBUG("[DEBUG] Selecting clicked piece" << std::endl);
+        DEBUG("[DEBUG] Selecting clicked piece");
         select(clickedPiece);
         return;
     }
@@ -296,17 +296,16 @@ void Board::onClick(const sf::Event& event) {
     for (const auto& move : selectedPiece->getMoves(*this)) {
         if (move.cell == Cell{row, column} && isMoveValid(move)) {
             auto& otherPiece = getPiece(move.cell);
-            DEBUG("[DEBUG] Moving to cell" << std::endl);
+            DEBUG("[DEBUG] Moving to cell");
             if (otherPiece) {
-                DEBUG("[DEBUG] Eating enemy" << std::endl);
+                DEBUG("[DEBUG] Eating enemy");
             }
             switch (move.type) {
                 case Move::Type::Castle:
                     capturableEnPassant = nullptr;
                     break;
                 case Move::Type::DoublePawn:
-                    DEBUG("[DEBUG] Piece is vulnerable to en passant"
-                          << std::endl);
+                    DEBUG("[DEBUG] Piece is vulnerable to en passant");
                     capturableEnPassant = selectedPiece;
                     break;
                 case Move::Type::EnPassantCapture:
@@ -337,12 +336,11 @@ void Board::onClick(const sf::Event& event) {
             unselect();
             return;
         }
-        DEBUG("[DEBUG] Selecting another piece with the same color"
-              << std::endl);
+        DEBUG("[DEBUG] Selecting another piece with the same color");
         select(clickedPiece);
         return;
     }
 
-    DEBUG("[DEBUG] Invalid move, unselecting" << std::endl);
+    DEBUG("[DEBUG] Invalid move, unselecting");
     unselect();
 }
