@@ -19,13 +19,13 @@ add_executable(chess-bit
     src/Board.cpp
     src/Piece.cpp
     src/Tile.cpp
+    src/Animated.cpp
     src/pieces/Pawn.cpp
     src/pieces/Tower.cpp
     src/pieces/Knight.cpp
     src/pieces/Bishop.cpp
     src/pieces/Queen.cpp
     src/pieces/King.cpp
-    src/Animatable.cpp
 )
 target_link_libraries(chess-bit PRIVATE sfml-graphics)
 target_compile_features(chess-bit PRIVATE cxx_std_17)

@@ -3,7 +3,7 @@
 #include "SFML/Graphics/Transform.hpp"
 #include "SFML/Graphics/Transformable.hpp"
 
-class Animatable : private sf::Transformable {
+class Animated : private sf::Transformable {
 public:
     const sf::Transform& getTransform() const;
 

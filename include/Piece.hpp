@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Animatable.hpp"
+#include "Animated.hpp"
 #include "Color.hpp"
 #include "Move.hpp"
 #include "SFML/Graphics/Drawable.hpp"
@@ -10,7 +10,7 @@
 
 class Board;
 
-class Piece : public sf::Drawable, private Animatable {
+class Piece : public sf::Drawable, private Animated {
 public:
     enum class Type { Pawn = 0, Tower, Knight, Bishop, Queen, King };
 
@@ -22,7 +22,7 @@ public:
     const Color getColor() const { return color; }
     bool hasMoved() const { return moved; }
     void setMoved(bool moved) { Piece::moved = moved; }
-    void update(int deltaMillis) { Animatable::update(deltaMillis); }
+    void update(int deltaMillis) { Animated::update(deltaMillis); }
 
 protected:
     void loadTexture(Type type);

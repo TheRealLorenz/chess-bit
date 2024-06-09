@@ -1,24 +1,24 @@
-#include "Animatable.hpp"
+#include "Animated.hpp"
 
 #include <cmath>
 #include <cstdlib>
 
-const sf::Transform& Animatable::getTransform() const {
+const sf::Transform& Animated::getTransform() const {
     return sf::Transformable::getTransform();
 }
 
-void Animatable::setPosition(const sf::Vector2f& position) {
+void Animated::setPosition(const sf::Vector2f& position) {
     targetPosition = position;
     sf::Transformable::setPosition(position);
 }
 
-void Animatable::setPositionAnimated(const sf::Vector2f& position,
+void Animated::setPositionAnimated(const sf::Vector2f& position,
                                      int pxPerSecond) {
     targetPosition = position;
     speedPerSecond = pxPerSecond;
 }
 
-void Animatable::updatePosition(int deltaMillis) {
+void Animated::updatePosition(int deltaMillis) {
     auto position = getPosition();
     if (position == targetPosition) {
         return;
@@ -52,6 +52,6 @@ void Animatable::updatePosition(int deltaMillis) {
     sf::Transformable::setPosition(position);
 }
 
-void Animatable::update(int deltaMillis) {
+void Animated::update(int deltaMillis) {
     updatePosition(deltaMillis);
 }
