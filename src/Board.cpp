@@ -3,9 +3,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "ResourceManager.hpp"
-#include "SFML/Graphics/PrimitiveType.hpp"
-#include "SFML/Graphics/Vertex.hpp"
+#include "SFML/Graphics/Rect.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Event.hpp"
 #include "debug.hpp"
@@ -28,41 +26,25 @@ const int defaultSchema[64][2] = {
 };
 
 Board::Board(const int sizePx) : sizePx(sizePx) {
-    baseTiles.setPrimitiveType(sf::Triangles);
-    highlightTiles.setPrimitiveType(sf::Triangles);
-    checkTiles.setPrimitiveType(sf::Triangles);
-    // Each cell is composed of two triangles
-    // hence 3 vertices for triangle
-    texture = ResourceManager::get().texture("tiles.png");
-    baseTiles.resize(8 * 8 * 6);
     const int cellSize = sizePx / 8;
 
     for (int row = 0; row < 8; row++) {
         for (int column = 0; column < 8; column++) {
-            auto vertices = &baseTiles[(row * 8 + column) * 6];
-
-            // Upper left triangle
-            vertices[0].position =
-                sf::Vector2f(column * cellSize, row * cellSize);
-            vertices[1].position =
-                sf::Vector2f((column + 1) * cellSize, row * cellSize);
-            vertices[2].position =
-                sf::Vector2f(column * cellSize, (row + 1) * cellSize);
-
-            // Bottom right triangle
-            vertices[3].position =
-                sf::Vector2f((column + 1) * cellSize, row * cellSize);
-            vertices[4].position =
-                sf::Vector2f(column * cellSize, (row + 1) * cellSize);
-            vertices[5].position =
-                sf::Vector2f((column + 1) * cellSize, (row + 1) * cellSize);
-
-            setTile(vertices,
-                    (column + row) % 2 == 0 ? Tile::Light : Tile::Dark);
+            baseTiles[row * 8 + column] = Tile(
+                sf::Vector2f(column * cellSize, row * cellSize),
+                sf::Vector2f(cellSize, cellSize),
+                (column + row) % 2 == 0 ? Tile::Type::Light : Tile::Type::Dark);
         }
     }
 
     populate(defaultSchema);
+}
+
+const sf::FloatRect Board::getBounds() const {
+    const auto scale = getScale();
+    const auto position = getPosition();
+
+    return {position.x, position.y, sizePx * scale.x, sizePx * scale.y};
 }
 
 void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -70,13 +52,16 @@ void Board::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     // passed by the caller
     states.transform *= getTransform();
 
-    // apply the tileset texture
-    states.texture = &texture;
-
-    // draw the vertex array
-    target.draw(baseTiles, states);
-    target.draw(highlightTiles, states);
-    target.draw(checkTiles, states);
+    // draw the tiles
+    for (const auto& tile : baseTiles) {
+        target.draw(tile, states);
+    }
+    for (const auto& tile : highlightTiles) {
+        target.draw(tile, states);
+    }
+    if (checkTile) {
+        target.draw(checkTile.value(), states);
+    }
 
     // draw the pieces
     for (auto& p : pieces) {
@@ -136,32 +121,6 @@ void Board::populate(const int schema[64][2]) {
     }
 }
 
-void Board::setTile(sf::Vertex *vertices, Tile tile) {
-    int x = 0;
-    int y = 0;
-
-    switch (tile) {
-        case Tile::Highlight:
-            break;
-        case Tile::Dark:
-            x += TILE_SIZE;
-            break;
-        case Tile::Light:
-            x += 2 * TILE_SIZE;
-            break;
-        case Tile::Check:
-            x += 3 * TILE_SIZE;
-            break;
-    }
-
-    vertices[0].texCoords = sf::Vector2f(x, y);
-    vertices[1].texCoords = sf::Vector2f(x + TILE_SIZE, y);
-    vertices[2].texCoords = sf::Vector2f(x, y + TILE_SIZE);
-    vertices[3].texCoords = sf::Vector2f(x + TILE_SIZE, y);
-    vertices[4].texCoords = sf::Vector2f(x, y + TILE_SIZE);
-    vertices[5].texCoords = sf::Vector2f(x + TILE_SIZE, y + TILE_SIZE);
-}
-
 const std::shared_ptr<Piece>& Board::getPiece(Cell cell) const {
     return pieces.get(cell.row, cell.column);
 }
@@ -180,26 +139,19 @@ void Board::highlightMoves() {
     if (!selectedPiece) return;
     highlightTiles.clear();
 
-    auto moves = selectedPiece->getMoves(*this);
     auto cell = selectedPiece->getCell();
-    auto vertices = &baseTiles[(cell.column + cell.row * 8) * 6];
+    const int cellSize = sizePx / 8;
 
-    for (int i = 0; i < 6; i++) {
-        highlightTiles.append(sf::Vertex(vertices[i].position));
-    }
-    setTile(&highlightTiles[0], Tile::Highlight);
+    highlightTiles.emplace_back(
+        sf::Vector2f(cell.column * cellSize, cell.row * cellSize),
+        sf::Vector2f(cellSize, cellSize), Tile::Type::Highlight);
 
-    int tile = 1;
-    for (auto& move : moves) {
+    for (auto& move : selectedPiece->getMoves(*this)) {
         if (!isMoveValid(move)) continue;
 
-        vertices = &baseTiles[(move.cell.column + move.cell.row * 8) * 6];
-
-        for (int i = 0; i < 6; i++) {
-            highlightTiles.append(sf::Vertex(vertices[i].position));
-        }
-        setTile(&highlightTiles[tile * 6], Tile::Highlight);
-        tile++;
+        highlightTiles.emplace_back(
+            sf::Vector2f(move.cell.column * cellSize, move.cell.row * cellSize),
+            sf::Vector2f(cellSize, cellSize), Tile::Type::Highlight);
     }
 }
 
@@ -219,16 +171,15 @@ bool Board::isUnderAttack(Cell cell, Color by) const {
 }
 
 void Board::setCheckCell(Cell cell) {
-    auto tile = &baseTiles[(cell.row * 8 + cell.column) * 6];
+    const int cellSize = sizePx / 8;
 
-    for (int i = 0; i < 6; i++) {
-        checkTiles.append(sf::Vertex(tile[i].position));
-    }
-    setTile(&checkTiles[0], Tile::Check);
+    checkTile = Tile(sf::Vector2f(cell.column * cellSize, cell.row * cellSize),
+                     sf::Vector2f(cellSize, cellSize), Tile::Type::Check);
 }
 
 void Board::checkForChecks() {
-    checkTiles.clear();
+    checkTile = std::optional<Tile>();
+
     if (turn == Color::Black &&
         isUnderAttack(blackKing->getCell(), Color::White)) {
         DEBUG("[DEBUG] Black King is under attack");
