@@ -10,7 +10,7 @@ class Matrix {
 public:
     const T& get(size_t row, size_t column) const {
         checkAccess(row, column);
-        return buffer[row * R + column];
+        return buffer[row * C + column];
     }
     T& get(size_t row, size_t column) {
         return const_cast<T>(static_cast<const Matrix>(*this).get(row, column));
@@ -23,7 +23,7 @@ public:
 
     void set(size_t row, size_t column, T item) {
         checkAccess(row, column);
-        buffer[row * R + column] = item;
+        buffer[row * C + column] = item;
     }
 
     auto begin() const { return buffer.begin(); }
