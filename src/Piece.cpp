@@ -27,7 +27,7 @@ void Piece::loadTexture(Type type) {
     int width = 42;
     int height = 42;
 
-    texture = ResourceManager::get().texture("pieces.png");
+    texture = ResourceManager::get().texture("textures/pieces.png");
 
     switch (type) {
         case Type::Pawn:

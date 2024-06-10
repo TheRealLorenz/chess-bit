@@ -5,7 +5,7 @@
 #include "SFML/Graphics/RenderTarget.hpp"
 
 Tile::Tile(const sf::Vector2f& position, const sf::Vector2f& size, Type type) {
-    texture = ResourceManager::get().texture("tiles.png");
+    texture = ResourceManager::get().texture("textures/tiles.png");
 
     vertices[0].position = {position.x, position.y};
     vertices[1].position = {position.x + size.x, position.y};
