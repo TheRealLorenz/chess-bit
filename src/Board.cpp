@@ -147,7 +147,7 @@ void Board::highlightMoves() {
         sf::Vector2f(cellSize, cellSize), Tile::Type::Highlight);
 
     for (auto& move : selectedPiece->getMoves(*this)) {
-        if (!isMoveValid(move)) continue;
+        if (!isMoveValid(selectedPiece, move)) continue;
 
         highlightTiles.emplace_back(
             sf::Vector2f(move.cell.column * cellSize, move.cell.row * cellSize),
@@ -210,10 +210,10 @@ void Board::movePiece(const std::shared_ptr<Piece>& p, Cell cell) {
     pieces.set(oldCell.row, oldCell.column, nullptr);
 }
 
-bool Board::isMoveValid(Move move) const {
+bool Board::isMoveValid(const std::shared_ptr<Piece>& piece, Move move) const {
     Board testBoard = Board(*this);
-    Cell oldCell = selectedPiece->getCell();
-    bool hasMoved = selectedPiece->hasMoved();
+    Cell oldCell = piece->getCell();
+    bool hasMoved = piece->hasMoved();
 
     // Using a shallow copy of the Baord to check for
     // checks.
@@ -221,10 +221,10 @@ bool Board::isMoveValid(Move move) const {
     // shared pointers, so it shouldn't be costly, but
     // we need to be careful cause it can still edit the
     // original pieces.
-    testBoard.movePiece(testBoard.selectedPiece, move.cell);
+    testBoard.movePiece(piece, move.cell);
     bool isValid = false;
 
-    switch (selectedPiece->getColor()) {
+    switch (piece->getColor()) {
         case Color::Black:
             isValid = !testBoard.isUnderAttack(testBoard.blackKing->getCell(),
                                                Color::White);
@@ -235,9 +235,9 @@ bool Board::isMoveValid(Move move) const {
             break;
     }
 
-    // Reset selectedPiece
-    selectedPiece->setCell(oldCell);
-    selectedPiece->setMoved(hasMoved);
+    // Reset piece
+    piece->setCell(oldCell);
+    piece->setMoved(hasMoved);
     return isValid;
 }
 
@@ -265,7 +265,8 @@ void Board::onClick(const sf::Event& event) {
     if (!selectedPiece) return;
 
     for (const auto& move : selectedPiece->getMoves(*this)) {
-        if (move.cell == Cell{row, column} && isMoveValid(move)) {
+        if (move.cell == Cell{row, column} &&
+            isMoveValid(selectedPiece, move)) {
             auto& otherPiece = getPiece(move.cell);
             DEBUG("[DEBUG] Moving to cell");
             if (otherPiece) {

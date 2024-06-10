@@ -50,6 +50,6 @@ private:
     void populate(const int schema[64][2]);
     void checkForChecks();
     void setCheckCell(Cell cell);
-    bool isMoveValid(Move move) const;
+    bool isMoveValid(const std::shared_ptr<Piece>& piece, Move move) const;
     void advanceTurn();
 };
