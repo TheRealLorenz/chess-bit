@@ -39,13 +39,12 @@ std::vector<Move> Pawn::getMoves(const Board& board) const {
         return true;
     };
 
-    if (isEmpty({nextRow, column}) || isEnemy({nextRow, column})) {
+    if (isEmpty({nextRow, column})) {
         moves.emplace_back(Cell{nextRow, column});
 
         int doubleStride = nextRow + rowDirection;
         if (!moved && isLegalCell({doubleStride, column}) &&
-            (isEmpty({doubleStride, column}) ||
-             isEnemy({doubleStride, column}))) {
+            isEmpty({doubleStride, column})) {
             moves.emplace_back(Cell{doubleStride, column},
                                Move::Type::DoublePawn);
         }
