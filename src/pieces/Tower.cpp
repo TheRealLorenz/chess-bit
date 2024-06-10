@@ -1,5 +1,7 @@
 #include "pieces/Tower.hpp"
 
+#include <tuple>
+
 #include "Board.hpp"
 
 Tower::Tower(Cell cell, Color color, bool hasMoved, const int sizePx)
@@ -10,57 +12,28 @@ Tower::Tower(Cell cell, Color color, bool hasMoved, const int sizePx)
 std::vector<Move> Tower::getMoves(const Board& board) const {
     std::vector<Move> moves;
 
-    // From piece to right border
-    for (int i = 1; i < 8 - column; i++) {
-        moves.push_back(Move({row, column + i}));
+    auto isLegalCell = [&board](const Cell& cell) {
+        if (cell.row < 0 || cell.row > 7) return false;
+        if (cell.column < 0 || cell.column > 7) return false;
 
-        auto otherPiece = board.getPiece({row, column + i});
-        if (!otherPiece) continue;
+        return true;
+    };
 
-        if (otherPiece->getColor() == color) {
-            moves.pop_back();
+    for (auto [rowDirection, columnDirection] :
+         std::vector<std::tuple<int, int>>{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}) {
+        Cell cell = {row + rowDirection, column + columnDirection};
+
+        while (isLegalCell(cell)) {
+            auto& piece = board.getPiece(cell);
+            if (piece && piece->getColor() == color) break;
+
+            moves.emplace_back(cell);
+
+            if (piece) break;
+
+            cell.column += columnDirection;
+            cell.row += rowDirection;
         }
-
-        break;
-    }
-    // From piece to left border
-    for (int i = 1; i <= column; i++) {
-        moves.push_back(Move({row, column - i}));
-
-        auto otherPiece = board.getPiece({row, column - i});
-        if (!otherPiece) continue;
-
-        if (otherPiece->getColor() == color) {
-            moves.pop_back();
-        }
-
-        break;
-    }
-    // From piece to upper border
-    for (int i = 1; i <= row; i++) {
-        moves.push_back(Move({row - i, column}));
-
-        auto otherPiece = board.getPiece({row - i, column});
-        if (!otherPiece) continue;
-
-        if (otherPiece->getColor() == color) {
-            moves.pop_back();
-        }
-
-        break;
-    }
-    // From piece to lower border
-    for (int i = 1; i < 8 - row; i++) {
-        moves.push_back(Move({row + i, column}));
-
-        auto otherPiece = board.getPiece({row + i, column});
-        if (!otherPiece) continue;
-
-        if (otherPiece->getColor() == color) {
-            moves.pop_back();
-        }
-
-        break;
     }
 
     return moves;
