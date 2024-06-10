@@ -48,7 +48,7 @@ private:
     void highlightMoves();
     void movePiece(const std::shared_ptr<Piece>& p, Cell cell);
     void populate(const int schema[64][2]);
-    void checkForChecks();
+    void checkForChecks(Color color);
     void setCheckCell(Cell cell);
     bool isMoveValid(const std::shared_ptr<Piece>& piece, Move move) const;
     void advanceTurn();

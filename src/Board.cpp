@@ -177,17 +177,33 @@ void Board::setCheckCell(Cell cell) {
                      sf::Vector2f(cellSize, cellSize), Tile::Type::Check);
 }
 
-void Board::checkForChecks() {
+void Board::checkForChecks(Color color) {
     checkTile = std::optional<Tile>();
 
-    if (turn == Color::Black &&
-        isUnderAttack(blackKing->getCell(), Color::White)) {
-        DEBUG("[DEBUG] Black King is under attack");
-        setCheckCell(blackKing->getCell());
-    } else if (turn == Color::White &&
-               isUnderAttack(whiteKing->getCell(), Color::Black)) {
-        DEBUG("[DEBUG] White King is under attack");
-        setCheckCell(whiteKing->getCell());
+    auto king = whiteKing;
+    Color otherColor = Color::Black;
+    if (color == Color::Black) {
+        king = blackKing;
+        otherColor = Color::White;
+    }
+
+    if (isUnderAttack(king->getCell(), otherColor)) {
+        DEBUG("[DEBUG] King is under attack");
+        setCheckCell(king->getCell());
+
+        for (auto& piece : pieces) {
+            if (!piece) continue;
+            if (piece->getColor() == otherColor) continue;
+
+            for (auto& move : piece->getMoves(*this)) {
+                if (isMoveValid(piece, move)) {
+                    return;
+                }
+            }
+        }
+
+        DEBUG("[DEBUG] Checkmate!");
+        return;
     }
 }
 
@@ -298,7 +314,7 @@ void Board::onClick(const sf::Event& event) {
             movePiece(selectedPiece, move.cell);
             unselect();
             advanceTurn();
-            checkForChecks();
+            checkForChecks(turn);
             return;
         }
     }
