@@ -22,7 +22,9 @@ public:
     const Color getColor() const { return color; }
     bool hasMoved() const { return moved; }
     void setMoved(bool moved) { Piece::moved = moved; }
-    void update(int deltaMillis) { Animated::update(deltaMillis); }
+    void update(std::chrono::milliseconds deltaTime) {
+        Animated::update(deltaTime);
+    }
 
 protected:
     void loadTexture(Type type);

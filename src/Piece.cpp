@@ -70,9 +70,5 @@ void Piece::setCell(Cell cell, int animationSpeed) {
 
     sf::Vector2f newPosition{column * sizePx + delta, row * sizePx + delta};
 
-    if (animationSpeed) {
-        setPositionAnimated(newPosition, animationSpeed);
-    } else {
-        setPosition(newPosition);
-    }
+    setPosition(newPosition, std::chrono::milliseconds(animationSpeed));
 }

@@ -53,7 +53,7 @@ int Game::run() {
         for (auto event = sf::Event{}; window.pollEvent(event);) {
             on_event(event);
         }
-        board.update(delta.asMilliseconds());
+        board.update(std::chrono::milliseconds(delta.asMilliseconds()));
         render();
     }
 

@@ -39,10 +39,10 @@ Board::Board(const int sizePx) : sizePx(sizePx) {
     populate(defaultSchema);
 }
 
-void Board::update(int deltaMillis) {
+void Board::update(std::chrono::milliseconds deltaTime) {
     for (auto& piece : pieces) {
         if (piece) {
-            piece->update(deltaMillis);
+            piece->update(deltaTime);
         }
     }
 }
@@ -302,7 +302,7 @@ void Board::onClick(const sf::Event& event) {
                               {selectedPiece->getCell().row, 3}, 200);
                     break;
             }
-            movePiece(selectedPiece, move.cell, 200);
+            movePiece(selectedPiece, move.cell, 1000);
             unselect();
             advanceTurn();
             checkForChecks();

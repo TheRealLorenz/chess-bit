@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <memory>
 #include <optional>
 
@@ -24,7 +25,7 @@ public:
     }
     bool isUnderAttack(Cell cell, Color by) const;
     void capturePiece(Cell cell);
-    void update(int deltaMillis);
+    void update(std::chrono::milliseconds deltaTime);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
