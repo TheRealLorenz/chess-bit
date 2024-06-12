@@ -3,11 +3,10 @@
 #include <chrono>
 #include <functional>
 
+#include "Easings.hpp"
 #include "debug.hpp"
 
 using namespace std::literals;
-
-inline double easeOutCubic(double x) { return 1 - std::pow(1 - x, 3); }
 
 template <typename T>
 class AnimatedValue {
@@ -32,7 +31,7 @@ private:
     std::chrono::milliseconds elapsed = 0s;
     std::chrono::milliseconds duration;
     bool done = true;
-    std::function<double(double)> timingFunction = easeOutCubic;
+    std::function<double(double)> timingFunction = easings::easeOutCubic;
 };
 
 template <typename T>
